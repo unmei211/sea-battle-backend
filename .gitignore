@@ -1,0 +1,18 @@
+#Default ignored files
+/shelf/
+/.idea/workspace.xml
+##############################
+#Java
+##############################
+.mtj.tmp/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.iml
+*.idea
+/target
+hs_err_pid*
+target
+>>>>>>> 0bd58b5 ([*] updated .gitignore)
