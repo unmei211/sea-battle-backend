@@ -1,32 +1,44 @@
 package it.sevenbits.seabattle.core.model.user;
 
+import it.sevenbits.seabattle.core.model.cell.Cell;
+import it.sevenbits.seabattle.core.model.session.Session;
+import it.sevenbits.seabattle.core.model.statistic.Statistic;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
-    public User() {}
-    public User(Long rating, String password, String login) {
-        this.login = login;
-        this.rating = rating;
-        this.password = password;
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "rating")
+    @Column
     private Long rating;
 
-    @Column(name = "password")
+    @Column
     private String password;
 
-    @Column(name = "login", unique = true)
+    @Column(unique = true)
     private String login;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Cell> cells;
+
+//    @OneToMany(mappedBy = "session", fetch = FetchType.LAZY)
+//    private List<Session> sessions; ;
+
+    @OneToOne(mappedBy = "user")
+    private Statistic statistic;
 
     @Override
     public String toString() {

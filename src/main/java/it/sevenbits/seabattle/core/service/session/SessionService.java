@@ -42,6 +42,7 @@ public class SessionService {
     }
 
     public List<Cell> getUserCells(Long playerId, Long sessionId) {
-      return cellRepository.findAllByUserIdAndSessionId(playerId, sessionId);
+//      return cellRepository.findAllByUserIdAndSessionId(playerId, sessionId);
+        return null;
     }
 }
