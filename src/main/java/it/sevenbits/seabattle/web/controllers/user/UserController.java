@@ -1,9 +1,9 @@
-package it.sevenbits.sea_battle.controller;
+package it.sevenbits.seabattle.web.controllers.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.sevenbits.sea_battle.entity.User;
-import it.sevenbits.sea_battle.services.UserService;
+import it.sevenbits.seabattle.core.model.user.User;
+import it.sevenbits.seabattle.core.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

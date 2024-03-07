@@ -1,4 +1,4 @@
-package it.sevenbits.sea_battle.entity;
+package it.sevenbits.seabattle.core.model.ship;
 
 import jakarta.persistence.*;
 

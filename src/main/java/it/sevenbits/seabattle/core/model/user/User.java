@@ -1,11 +1,8 @@
-package it.sevenbits.sea_battle.entity;
+package it.sevenbits.seabattle.core.model.user;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Collections;
 
 @Entity
 @Table(name = "users")

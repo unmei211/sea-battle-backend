@@ -1,5 +1,6 @@
-package it.sevenbits.sea_battle.entity;
+package it.sevenbits.seabattle.core.model.session;
 
+import it.sevenbits.seabattle.core.model.cell.Cell;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;

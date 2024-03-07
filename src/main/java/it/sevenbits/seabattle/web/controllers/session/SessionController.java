@@ -1,13 +1,12 @@
-package it.sevenbits.sea_battle.controller;
+package it.sevenbits.seabattle.web.controllers.session;
 
-import it.sevenbits.sea_battle.entity.Cell;
-import it.sevenbits.sea_battle.entity.Session;
-import it.sevenbits.sea_battle.services.SessionService;
+import it.sevenbits.seabattle.core.model.cell.Cell;
+import it.sevenbits.seabattle.core.model.session.Session;
+import it.sevenbits.seabattle.core.service.session.SessionService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/session")

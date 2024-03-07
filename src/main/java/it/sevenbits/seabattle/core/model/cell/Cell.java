@@ -1,5 +1,7 @@
-package it.sevenbits.sea_battle.entity;
+package it.sevenbits.seabattle.core.model.cell;
 
+import it.sevenbits.seabattle.core.model.session.Session;
+import it.sevenbits.seabattle.core.model.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package it.sevenbits.sea_battle;
+package it.sevenbits.seabattle;
 
 
 import org.springframework.boot.SpringApplication;

@@ -1,9 +1,8 @@
-package it.sevenbits.sea_battle.controller;
+package it.sevenbits.seabattle.web.controllers.cell;
 
-import it.sevenbits.sea_battle.entity.Cell;
-import it.sevenbits.sea_battle.services.CellService;
+import it.sevenbits.seabattle.core.model.cell.Cell;
+import it.sevenbits.seabattle.core.service.cell.CellService;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

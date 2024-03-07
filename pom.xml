@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>it.sevenbits</groupId>
-    <artifactId>sea_battle</artifactId>
+    <artifactId>seabattle</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>sea_battle</name>
     <description>video game sea battle</description>
