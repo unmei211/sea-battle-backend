@@ -2,11 +2,15 @@ package it.sevenbits.seabattle.core.service.session;
 
 import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.model.session.Session;
+import it.sevenbits.seabattle.core.model.user.User;
 import it.sevenbits.seabattle.core.repository.cell.CellRepository;
 import it.sevenbits.seabattle.core.repository.session.SessionRepository;
+import it.sevenbits.seabattle.core.service.user.UserService;
+import it.sevenbits.seabattle.web.model.SessionModel;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +20,7 @@ public class SessionService {
 
     private final SessionRepository sessionRepository;
     private final CellRepository cellRepository;
+    private final UserService userService;
 
     public Optional<Session> getById(Long id) {
         return sessionRepository.findById(id);
@@ -38,11 +43,20 @@ public class SessionService {
 
     }
 
-    public void save(Session objectToSave) {
+    public void save(SessionModel sessionModel) {
+        Session session = new Session();
+        session.setUserFirst(userService.getById(sessionModel.getUserFirst()).get());
+        session.setUserSecond(userService.getById(sessionModel.getUserSecond()).get());
+        session.setDate(new Date());
+        session.setGameState("Preparing");
+        sessionRepository.save(session);
     }
 
     public List<Cell> getUserCells(Long playerId, Long sessionId) {
 //      return cellRepository.findAllByUserIdAndSessionId(playerId, sessionId);
         return null;
+    }
+
+    public void makeTurn(Long sessionId, Long userId, int xPos, int yPos) {
     }
 }
