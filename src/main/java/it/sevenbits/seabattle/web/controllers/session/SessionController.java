@@ -3,7 +3,10 @@ package it.sevenbits.seabattle.web.controllers.session;
 import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.model.session.Session;
 import it.sevenbits.seabattle.core.service.session.SessionService;
+import it.sevenbits.seabattle.web.model.SessionModel;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,9 +19,24 @@ public class SessionController {
     SessionService sessionService;
 
     @GetMapping("/{id}")
-    public Session GetSessionData(@PathVariable long id) {
-        return sessionService.getById(id).get();
+    public ResponseEntity<?> GetSessionData(@PathVariable long id) {
+        try {
+            Session session = sessionService.getById(id).get();
+            return new ResponseEntity<>(session, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
+    }
+
+    @PostMapping("/{sessionId}/turn/{userId}")
+    public void makeTurn(
+            @PathVariable Long sessionId,
+            @PathVariable Long userId,
+            @RequestBody int xPos,
+            @RequestBody int yPos
+    ) {
+        sessionService.makeTurn(sessionId, userId, xPos, yPos);
     }
 
     @PatchMapping("/{id}")
@@ -31,8 +49,8 @@ public class SessionController {
 
     @PostMapping
     public void saveSession(
+            @RequestBody SessionModel session
     ) {
-        Session session = new Session();
         sessionService.save(session);
     }
 
