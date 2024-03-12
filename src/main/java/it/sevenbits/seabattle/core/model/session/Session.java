@@ -27,7 +27,7 @@ public class Session {
     private Date date;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "winner_id")
     private User winner;
 
     @ManyToOne

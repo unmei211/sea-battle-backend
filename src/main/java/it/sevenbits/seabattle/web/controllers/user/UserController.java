@@ -1,36 +1,35 @@
 package it.sevenbits.seabattle.web.controllers.user;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.sevenbits.seabattle.core.model.user.User;
 import it.sevenbits.seabattle.core.service.user.UserService;
+import it.sevenbits.seabattle.web.model.UserDTO;
+import it.sevenbits.seabattle.web.model.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-    private final ObjectMapper objMapper;
 
     @Autowired
-    public UserController(final UserService userService, final ObjectMapper objectMapper) {
+    public UserController(final UserService userService) {
         this.userService = userService;
-        this.objMapper = objectMapper;
     }
 
     @GetMapping("/{id}")
-    public String getUserData(
+    public ResponseEntity<?> getUserData(
             @PathVariable Long id
     ) {
-        User user = userService.getById(id).get();
-        String jsonUserData;
         try {
-            jsonUserData = objMapper.writeValueAsString(user);
-        } catch (JsonProcessingException exception) {
-            jsonUserData = "error parse";
+            UserDTO userDTO = userService.getByIdDTO(id);
+            return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return jsonUserData;
     }
 
     @PatchMapping("/{id}")
@@ -42,14 +41,9 @@ public class UserController {
     }
 
     @PostMapping
-    public void saveUser(
-//            User user
+    public UserDTO addUser(
+            @RequestBody UserForm userForm
     ) {
-        User user = new User();
-        user.setLogin("Name");
-        user.setPassword("Pass");
-        user.setRating(5L);
-
-        userService.save(user);
+        return userService.save(userForm);
     }
 }
