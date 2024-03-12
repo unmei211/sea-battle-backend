@@ -26,11 +26,11 @@ public class Cell {
     @Column(name = "is_shot_down")
     boolean isShotDown;
 
-    @Column(name = "x_pos")
-    int xPos;
+    @Column
+    int axis;
 
-    @Column(name = "y_pos")
-    int yPos;
+    @Column
+    int ordinate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

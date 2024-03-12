@@ -2,11 +2,11 @@ package it.sevenbits.seabattle.core.service.session;
 
 import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.model.session.Session;
-import it.sevenbits.seabattle.core.model.user.User;
 import it.sevenbits.seabattle.core.repository.cell.CellRepository;
 import it.sevenbits.seabattle.core.repository.session.SessionRepository;
 import it.sevenbits.seabattle.core.service.user.UserService;
 import it.sevenbits.seabattle.web.model.SessionModel;
+import it.sevenbits.seabattle.web.model.StatePullingRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +57,21 @@ public class SessionService {
         return null;
     }
 
-    public void makeTurn(Long sessionId, Long userId, int xPos, int yPos) {
+    public String makeTurn(Long sessionId, Long userId, int xPos, int yPos) {
+        Optional<Cell> cell = cellRepository.findCellBySessionIdAndUserIdAndAxisAndOrdinate(sessionId, userId, xPos, yPos);
+        if (cell.get().isShotDown()) {
+            return "Already attacked";
+        }
+        cell.get().setShotDown(true);
+        cellRepository.save(cell.get());
+        if (cell.get().isContainsShip()) {
+            return "catch";
+        } else {
+            return "miss";
+        }
+    }
+
+    public StatePullingRequest statePulling (Long sessionId) {
+        return new StatePullingRequest();
     }
 }

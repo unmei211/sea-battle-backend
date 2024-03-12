@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -47,4 +48,17 @@ public class Session {
 
     @OneToMany (mappedBy = "session")
     private List<Cell> cells;
+
+    @Column(name = "create_date")
+    private Calendar createDate;
+
+    @Column(name = "arrangement_time")
+    private Calendar arrangementTime;
+
+    @Column (name = "start_game_time")
+    private Calendar startGameTime;
+
+    @Column (name = "player_turn_start")
+    private Calendar playerTurnStart;
+
 }
