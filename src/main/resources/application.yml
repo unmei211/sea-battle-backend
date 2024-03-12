@@ -1,0 +1,16 @@
+spring:
+  flyway:
+    locations: classpath:migrations
+    url: jdbc:postgresql://localhost:5432/sea_battle
+    user: postgres
+    password: cisco
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sea_battle
+    username: postgres
+    password: cisco
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+server:
+  port: 8080
