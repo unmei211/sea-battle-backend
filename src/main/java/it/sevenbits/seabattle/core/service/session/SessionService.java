@@ -15,6 +15,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * session sevice
+ */
 @AllArgsConstructor
 @Service
 public class SessionService {
@@ -23,7 +26,13 @@ public class SessionService {
     private final CellRepository cellRepository;
     private final UserService userService;
 
-    public Optional<Session> getById(Long id) {
+    /**
+     * get session by id
+     *
+     * @param id - session id
+     * @return - return session
+     */
+    public Optional<Session> getById(final Long id) {
         return sessionRepository.findById(id);
     }
 
@@ -31,20 +40,32 @@ public class SessionService {
         return null;
     }
 
-
-    public void remove(Long id) {
-
-    }
-
-    public void remove(Session object) {
-
-    }
-
-    public void update(Long id, Session objectToBeUpdated) {
+    /**
+     * remove session by id
+     *
+     * @param id - session id
+     */
+    public void remove(final Long id) {
 
     }
 
-    public void save(SessionModel sessionModel) {
+    /**
+     * update session
+     *
+     * @param id                - session id
+     * @param objectToBeUpdated - new session
+     */
+
+    public void update(final Long id, final Session objectToBeUpdated) {
+
+    }
+
+    /**
+     * save session in database
+     *
+     * @param sessionModel - session model
+     */
+    public void save(final SessionModel sessionModel) {
         Session session = new Session();
         session.setUserFirst(userService.getById(sessionModel.getUserFirst()).get());
         session.setUserSecond(userService.getById(sessionModel.getUserSecond()).get());
@@ -53,12 +74,29 @@ public class SessionService {
         sessionRepository.save(session);
     }
 
-    public List<Cell> getUserCells(Long playerId, Long sessionId) {
+    /**
+     * get cells specific user
+     *
+     * @param playerId  - player id
+     * @param sessionId - session id
+     * @return list of cells
+     */
+    public List<Cell> getUserCells(final Long playerId, final Long sessionId) {
 //      return cellRepository.findAllByUserIdAndSessionId(playerId, sessionId);
         return null;
     }
 
-    public String makeTurn(Long sessionId, Long userId, int xPos, int yPos) {
+
+    /**
+     * calls when player make turn, return result (shoot or miss)
+     *
+     * @param sessionId - session id
+     * @param userId    - user id
+     * @param xPos      - x coordinate
+     * @param yPos      - y coordinate
+     * @return result (may error)
+     */
+    public String makeTurn(final Long sessionId, final Long userId, final int xPos, final int yPos) {
         Optional<Cell> cell = cellRepository.findCellBySessionIdAndUserIdAndAxisAndOrdinate(sessionId, userId, xPos, yPos);
         if (cell.get().isShotDown()) {
             return "Already attacked";
@@ -75,18 +113,38 @@ public class SessionService {
         }
     }
 
-    public StatePullingRequest statePulling(Long sessionId) {
+    /**
+     * state pulling (not use)
+     *
+     * @param sessionId - session id
+     * @return nothing
+     */
+    public StatePullingRequest statePulling(final Long sessionId) {
         return new StatePullingRequest();
     }
 
-    public Long getWinnerId(Long sessionId) {
+    /**
+     * get winner id
+     *
+     * @param sessionId - session id
+     * @return winner id
+     */
+    public Long getWinnerId(final Long sessionId) {
         Optional<Session> session = sessionRepository.findById(sessionId);
         return session.get().getWinner().getId();
     }
 
-    public void putShips(Long sessionId, Long userId, ShipArrangement shipArrangement) {
-        for (int i = 1; i <= 10; i++) {
-            for (int j = 1; j <= 10; j++) {
+    /**
+     * put ships specific user and fill other cells
+     *
+     * @param sessionId       - session id
+     * @param userId          - user id
+     * @param shipArrangement - list of ships
+     */
+    public void putShips(final Long sessionId, final Long userId, final ShipArrangement shipArrangement) {
+        final int cellsNumber = 10;
+        for (int i = 1; i <= cellsNumber; i++) {
+            for (int j = 1; j <= cellsNumber; j++) {
 
             }
         }

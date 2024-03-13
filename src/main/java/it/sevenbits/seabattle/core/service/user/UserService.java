@@ -9,19 +9,39 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * user service
+ */
 @Service
 public class UserService {
     private final UserRepository userRepository;
 
+    /**
+     * constructor
+     *
+     * @param userRepository - user repos
+     */
     public UserService(final UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public Optional<User> getById(Long id) {
+    /**
+     * get user by id
+     *
+     * @param id - user id
+     * @return user
+     */
+    public Optional<User> getById(final Long id) {
         return userRepository.findById(id);
     }
 
-    public UserDTO getByIdDTO(Long id) {
+    /**
+     * get user dto by id
+     *
+     * @param id - user id
+     * @return user dto
+     */
+    public UserDTO getByIdDTO(final Long id) {
         Optional<User> user = userRepository.findById(id);
         return new UserDTO(user.get().getId(), user.get().getLogin(), user.get().getRating());
     }
@@ -30,21 +50,35 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public void remove(Long id) {
+    /**
+     * remove user from db
+     *
+     * @param id - user id
+     */
+    public void remove(final Long id) {
         userRepository.deleteById(id);
     }
 
-    public void remove(User user) {
-        userRepository.delete(user);
-    }
+    /**
+     * update user
+     *
+     * @param id              - user id
+     * @param userToBeUpdated user
+     */
 
-    public void update(Long id, User userToBeUpdated) {
+    public void update(final Long id, final User userToBeUpdated) {
         if (userRepository.existsById(id)) {
             userRepository.save(userToBeUpdated);
         }
     }
 
-    public UserDTO save(UserForm userForm) {
+    /**
+     * save user
+     *
+     * @param userForm - user form (login and password)
+     * @return userDTO
+     */
+    public UserDTO save(final UserForm userForm) {
         User userToSave = new User();
         userToSave.setLogin(userForm.getLogin());
         userToSave.setPassword(userForm.getPassword());
