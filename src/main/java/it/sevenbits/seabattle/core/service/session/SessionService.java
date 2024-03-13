@@ -6,6 +6,7 @@ import it.sevenbits.seabattle.core.repository.cell.CellRepository;
 import it.sevenbits.seabattle.core.repository.session.SessionRepository;
 import it.sevenbits.seabattle.core.service.user.UserService;
 import it.sevenbits.seabattle.web.model.SessionModel;
+import it.sevenbits.seabattle.web.model.ShipArrangement;
 import it.sevenbits.seabattle.web.model.StatePullingRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -64,6 +65,9 @@ public class SessionService {
         }
         cell.get().setShotDown(true);
         cellRepository.save(cell.get());
+        Optional<Session> session = sessionRepository.findById(sessionId);
+        session.get().setTargetCellId(cell.get().getId());
+
         if (cell.get().isContainsShip()) {
             return "catch";
         } else {
@@ -71,7 +75,20 @@ public class SessionService {
         }
     }
 
-    public StatePullingRequest statePulling (Long sessionId) {
+    public StatePullingRequest statePulling(Long sessionId) {
         return new StatePullingRequest();
+    }
+
+    public Long getWinnerId(Long sessionId) {
+        Optional<Session> session = sessionRepository.findById(sessionId);
+        return session.get().getWinner().getId();
+    }
+
+    public void putShips(Long sessionId, Long userId, ShipArrangement shipArrangement) {
+        for (int i = 1; i <= 10; i++) {
+            for (int j = 1; j <= 10; j++) {
+
+            }
+        }
     }
 }
