@@ -46,7 +46,7 @@ public class Session {
     @JoinColumn(name = "user_second")
     private User userSecond;
 
-    @OneToMany (mappedBy = "session")
+    @OneToMany(mappedBy = "session")
     private List<Cell> cells;
 
     @Column(name = "create_date")
@@ -55,10 +55,12 @@ public class Session {
     @Column(name = "arrangement_time")
     private Calendar arrangementTime;
 
-    @Column (name = "start_game_time")
+    @Column(name = "start_game_time")
     private Calendar startGameTime;
 
-    @Column (name = "player_turn_start")
+    @Column(name = "player_turn_start")
     private Calendar playerTurnStart;
 
+    @Column(name = "target_cell_id")
+    private Long targetCellId;  
 }
