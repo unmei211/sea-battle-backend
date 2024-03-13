@@ -20,6 +20,7 @@ public class SessionController {
 
     SessionService sessionService;
 
+
     @GetMapping("/{id}")
     public ResponseEntity<?> GetSessionData(@PathVariable long id) {
         try {
@@ -39,6 +40,7 @@ public class SessionController {
     ) {
         try {
             String result = sessionService.makeTurn(sessionId, userId, coords.getAxis(), coords.getOrdinate());
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -72,6 +74,7 @@ public class SessionController {
             @PathVariable Long sessionId,
             @PathVariable Long userId
     ) {
+
         return sessionService.getUserCells(sessionId, userId);
     }
 
