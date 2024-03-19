@@ -5,7 +5,7 @@ import it.sevenbits.seabattle.core.model.session.Session;
 import it.sevenbits.seabattle.core.service.session.SessionService;
 import it.sevenbits.seabattle.web.model.Coords;
 import it.sevenbits.seabattle.web.model.SessionModel;
-import it.sevenbits.seabattle.web.model.StatePullingRequest;
+import it.sevenbits.seabattle.web.model.ShipArrangement;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -78,13 +78,34 @@ public class SessionController {
         return sessionService.getUserCells(sessionId, userId);
     }
 
+    // TODO: Будет сокет
     @GetMapping("/{sessionId}/state")
-    public ResponseEntity<StatePullingRequest> statePulling(
+    public void statePulling(
+            @PathVariable Long sessionId
+    ) {
+    }
+
+    @GetMapping("{sessionId}/end")
+    public ResponseEntity<Long> getWinnerId(
             @PathVariable Long sessionId
     ) {
         try {
-            StatePullingRequest statePulling = sessionService.statePulling(sessionId);
-            return new ResponseEntity<>(statePulling, HttpStatus.OK);
+            Long winnerId = sessionService.getWinnerId(sessionId);
+            return new ResponseEntity<>(winnerId, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("{sessionId}/arrangement/{userId}")
+    public ResponseEntity<?> userShipArrangement(
+            @PathVariable Long sessionId,
+            @PathVariable Long userId,
+            @RequestBody ShipArrangement shipArrangement
+    ) {
+        try {
+            sessionService.putShips(sessionId, userId, shipArrangement);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
