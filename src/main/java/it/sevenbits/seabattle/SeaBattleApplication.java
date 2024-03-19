@@ -4,11 +4,19 @@ package it.sevenbits.seabattle;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * main class
+ */
 @SpringBootApplication
 public class SeaBattleApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SeaBattleApplication.class, args);
-	}
+    /**
+     * main class
+     *
+     * @param args - console arguments
+     */
+    public static void main(final String[] args) {
+        SpringApplication.run(SeaBattleApplication.class, args);
+    }
 
 }

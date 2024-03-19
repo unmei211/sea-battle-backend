@@ -2,7 +2,10 @@ package it.sevenbits.seabattle.web.model;
 
 import java.sql.Time;
 
+/**
+ * not use
+ */
 public class StatePullingRequest {
-    String state;
-    Time time;
+    private String state;
+    private Time time;
 }

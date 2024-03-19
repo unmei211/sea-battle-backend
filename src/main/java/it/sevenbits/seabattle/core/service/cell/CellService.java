@@ -8,12 +8,21 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * cell service
+ */
 @AllArgsConstructor
 @Service
-public class CellService  {
+public class CellService {
     private final CellRepository cellRepository;
 
-    public Optional<Cell> getById(Long id) {
+    /**
+     * get cell by id
+     *
+     * @param id - cell id
+     * @return - cell
+     */
+    public Optional<Cell> getById(final Long id) {
         return Optional.empty();
     }
 
@@ -23,22 +32,42 @@ public class CellService  {
     }
 
 
-    public void remove(Long id) {
+    /**
+     * remove cell
+     *
+     * @param id - cell id
+     */
+    public void remove(final Long id) {
         cellRepository.deleteById(id);
     }
 
-
-    public void remove(Cell cell) {
+    /**
+     * remove cell
+     *
+     * @param cell - cell
+     */
+    public void remove(final Cell cell) {
         cellRepository.delete(cell);
     }
 
 
-    public void update(Long id, Cell cellToBeUpdated) {
+    /**
+     * update cell
+     *
+     * @param id              - cell id
+     * @param cellToBeUpdated - cell
+     */
+    public void update(final Long id, final Cell cellToBeUpdated) {
         cellRepository.save(cellToBeUpdated);
     }
 
 
-    public void save(Cell cellToSave) {
+    /**
+     * save cell
+     *
+     * @param cellToSave - cell
+     */
+    public void save(final Cell cellToSave) {
         cellRepository.save(cellToSave);
     }
 }
