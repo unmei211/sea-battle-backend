@@ -6,8 +6,11 @@ import it.sevenbits.seabattle.core.service.session.SessionService;
 import it.sevenbits.seabattle.web.model.Coords;
 import it.sevenbits.seabattle.web.model.SessionModel;
 import it.sevenbits.seabattle.web.model.ShipArrangement;
+import it.sevenbits.seabattle.web.model.session.SessionPendingDTO;
+import it.sevenbits.seabattle.web.model.user.UserDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * session rest controller
@@ -38,14 +42,13 @@ public class SessionController {
      * @return - session entity
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getSessionData(@PathVariable final long id) {
+    public ResponseEntity<?> getSessionData(@PathVariable final Long id) {
         try {
             Session session = sessionService.getById(id).get();
             return new ResponseEntity<>(session, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
     }
 
     /**
@@ -56,6 +59,7 @@ public class SessionController {
      * @param coords    - coordinates where player shoot
      * @return - result (shoot or miss)
      */
+
     @PostMapping("/{sessionId}/turn/{userId}")
     public ResponseEntity<String> makeTurn(
             @PathVariable final Long sessionId,
@@ -87,13 +91,20 @@ public class SessionController {
     /**
      * save session in database
      *
-     * @param session - session
+     * @param userDTO - DTO object of user
      */
     @PostMapping
-    public void saveSession(
-            @RequestBody final SessionModel session
+    public ResponseEntity<?> createOrJoinSession(
+            @RequestBody final UserDTO userDTO
     ) {
-        sessionService.save(session);
+        Session session = sessionService.getActualSession(userDTO.getId());
+        ResponseEntity<SessionPendingDTO> response;
+        if (session.getGameState().equals(Session.STATUS_PENDING)) {
+            response = new ResponseEntity<>(Session.toPendingDTO(session), HttpStatus.CREATED);
+        } else {
+            response = new ResponseEntity<>(Session.toPendingDTO(session), HttpStatus.OK);
+        }
+        return response;
     }
 
     /**

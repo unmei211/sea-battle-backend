@@ -6,5 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 /**
  * session repository
  */
+import java.util.List;
+
 public interface SessionRepository extends JpaRepository<Session, Long> {
+    List<Session> findAllByGameState(String state);
 }
