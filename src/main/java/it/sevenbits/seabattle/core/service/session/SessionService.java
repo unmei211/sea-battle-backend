@@ -2,6 +2,7 @@ package it.sevenbits.seabattle.core.service.session;
 
 import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.model.session.Session;
+import it.sevenbits.seabattle.core.model.user.User;
 import it.sevenbits.seabattle.core.repository.cell.CellRepository;
 import it.sevenbits.seabattle.core.repository.session.SessionRepository;
 import it.sevenbits.seabattle.core.service.user.UserService;
@@ -9,8 +10,10 @@ import it.sevenbits.seabattle.web.model.SessionModel;
 import it.sevenbits.seabattle.web.model.ShipArrangement;
 import it.sevenbits.seabattle.web.model.StatePullingRequest;
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +28,37 @@ public class SessionService {
 
     public Optional<Session> getById(Long id) {
         return sessionRepository.findById(id);
+    }
+
+    public Session getActualSession(final Long userId) {
+        List<Session> sessions = sessionRepository.findAllByGameState(Session.STATUS_PENDING);
+        if(sessions.isEmpty()) {
+            //TODO: subscribe to socket
+            //TODO: add PendingTaskTimer to timer
+            return createSession(userId);
+        } else {
+            Optional<User> userSecond = userService.getById(userId);
+            Session actualSession = sessions.get(0);
+            actualSession.setUserSecond(userSecond.get());
+            actualSession.setGameState(Session.STATUS_ARRANGEMENT);
+            Date date = new Date();
+            Timestamp timestamp = new Timestamp(date.getTime());
+            actualSession.setArrangementStartDate(timestamp);
+            //TODO: remove PendingTaskTimer from timer
+            //TODO: notificate FirstUser by messageBroker
+            return sessionRepository.save(actualSession);
+        }
+    }
+
+    private Session createSession(final Long userId) {
+        Session session = new Session();
+        Date currentDate = new Date();
+        Timestamp timeStamp = new Timestamp(currentDate.getTime());
+        Optional<User> firstUser = userService.getById(userId);
+        session.setUserFirst(firstUser.get());
+        session.setCreateDate(timeStamp);
+        session.setGameState(Session.STATUS_PENDING);
+        return sessionRepository.save(session);
     }
 
     public List<Session> getAll() {
@@ -48,8 +82,10 @@ public class SessionService {
         Session session = new Session();
         session.setUserFirst(userService.getById(sessionModel.getUserFirst()).get());
         session.setUserSecond(userService.getById(sessionModel.getUserSecond()).get());
-        session.setDate(new Date());
-        session.setGameState("Preparing");
+        Date date = new Date();
+        Timestamp timestamp = new Timestamp(date.getTime());
+        session.setCreateDate(timestamp);
+//        session.setGameState();
         sessionRepository.save(session);
     }
 

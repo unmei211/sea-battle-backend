@@ -23,7 +23,7 @@ public class User {
     private Long id;
 
     @Column
-    private int rating;
+    private Integer rating;
 
     @Column
     private String password;

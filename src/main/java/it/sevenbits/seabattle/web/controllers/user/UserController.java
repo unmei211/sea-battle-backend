@@ -1,9 +1,8 @@
 package it.sevenbits.seabattle.web.controllers.user;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.sevenbits.seabattle.core.model.user.User;
 import it.sevenbits.seabattle.core.service.user.UserService;
-import it.sevenbits.seabattle.web.model.UserDTO;
+import it.sevenbits.seabattle.web.model.user.UserDTO;
 import it.sevenbits.seabattle.web.model.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

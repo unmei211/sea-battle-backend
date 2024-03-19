@@ -2,7 +2,7 @@ package it.sevenbits.seabattle.core.service.user;
 
 import it.sevenbits.seabattle.core.model.user.User;
 import it.sevenbits.seabattle.core.repository.user.UserRepository;
-import it.sevenbits.seabattle.web.model.UserDTO;
+import it.sevenbits.seabattle.web.model.user.UserDTO;
 import it.sevenbits.seabattle.web.model.UserForm;
 import org.springframework.stereotype.Service;
 
