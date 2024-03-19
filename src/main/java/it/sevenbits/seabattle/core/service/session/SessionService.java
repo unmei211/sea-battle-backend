@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * session sevice
+ * session service
  */
 @AllArgsConstructor
 @Service
