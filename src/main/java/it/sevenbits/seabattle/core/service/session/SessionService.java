@@ -182,6 +182,6 @@ public class SessionService {
      * @param shipArrangement - list of ships
      */
     public void putShips(final Long sessionId, final Long userId, final ShipArrangement shipArrangement) {
-        System.out.println(arrangementValidator.validateArrangement(shipArrangement));
+        System.out.println(arrangementValidator.validateArrangementCount(shipArrangement));
     }
 }

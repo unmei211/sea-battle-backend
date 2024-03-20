@@ -13,14 +13,20 @@ import java.util.Objects;
 public class ArrangementValidator {
 
     private final ShipCount shipCount;
-    HashMap<Integer, Integer> shipMap;
+    private HashMap<Integer, Integer> shipMap;
 
     public ArrangementValidator() {
         this.shipCount = new ShipCount();
         shipMap = new HashMap<>();
     }
 
-    public boolean validateArrangement(final ShipArrangement shipArrangement) {
+    public boolean validateArrangementPosition(final ShipArrangement shipArrangement) {
+
+        return true;
+    }
+
+
+    public boolean validateArrangementCount(final ShipArrangement shipArrangement) {
         shipMap.put(shipCount.getSINGLE_DECK(), 0);
         shipMap.put(shipCount.getDOUBLE_DECK(), 0);
         shipMap.put(shipCount.getTHREE_DECK(), 0);
@@ -52,8 +58,6 @@ public class ArrangementValidator {
             }
         }
         for (Integer el : shipMap.keySet()) {
-            System.out.println("Count of " + shipMap.get(el) + ": " + el);
-            System.out.println("Should be:" + el);
             if (!Objects.equals(el, shipMap.get(el))) {
                 return false;
             }
