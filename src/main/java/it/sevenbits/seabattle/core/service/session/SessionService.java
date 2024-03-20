@@ -6,15 +6,18 @@ import it.sevenbits.seabattle.core.model.user.User;
 import it.sevenbits.seabattle.core.repository.cell.CellRepository;
 import it.sevenbits.seabattle.core.repository.session.SessionRepository;
 import it.sevenbits.seabattle.core.service.user.UserService;
+import it.sevenbits.seabattle.core.validator.session.ArrangementValidator;
 import it.sevenbits.seabattle.web.model.SessionModel;
 import it.sevenbits.seabattle.web.model.ShipArrangement;
 import it.sevenbits.seabattle.web.model.StatePullingRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +31,7 @@ public class SessionService {
     private final SessionRepository sessionRepository;
     private final CellRepository cellRepository;
     private final UserService userService;
+    private final ArrangementValidator arrangementValidator;
 
     /**
      * get session by id
@@ -41,7 +45,7 @@ public class SessionService {
 
     public Session getActualSession(final Long userId) {
         List<Session> sessions = sessionRepository.findAllByGameState(Session.STATUS_PENDING);
-        if(sessions.isEmpty()) {
+        if (sessions.isEmpty()) {
             //TODO: subscribe to socket
             //TODO: add PendingTaskTimer to timer
             return createSession(userId);
@@ -178,11 +182,6 @@ public class SessionService {
      * @param shipArrangement - list of ships
      */
     public void putShips(final Long sessionId, final Long userId, final ShipArrangement shipArrangement) {
-        final int cellsNumber = 10;
-        for (int i = 1; i <= cellsNumber; i++) {
-            for (int j = 1; j <= cellsNumber; j++) {
-
-            }
-        }
+        System.out.println(arrangementValidator.validateArrangement(shipArrangement));
     }
 }

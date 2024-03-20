@@ -12,12 +12,12 @@ import java.util.List;
 @Getter
 @Setter
 public class ShipArrangement {
-    private List<Coords> ships;
+    private List<List<Coords>> shipCoords;
 
     /**
      * constructor
      */
     public ShipArrangement() {
-        ships = new ArrayList<>();
+        shipCoords = new ArrayList<>();
     }
 }
