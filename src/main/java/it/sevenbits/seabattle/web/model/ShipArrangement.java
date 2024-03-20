@@ -6,11 +6,17 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * list of ships
+ */
 @Getter
 @Setter
 public class ShipArrangement {
-    List<Coords> ships;
+    private List<Coords> ships;
 
+    /**
+     * constructor
+     */
     public ShipArrangement() {
         ships = new ArrayList<>();
     }

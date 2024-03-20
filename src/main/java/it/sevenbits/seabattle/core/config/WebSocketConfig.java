@@ -12,23 +12,15 @@ import java.util.TimerTask;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-
-            }
-        };
-
-        task.cancel();
-//        registry.enableSimpleBroker()
-//        registry.setApplicationDestinationPrefixes()
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("/topic");
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-//        registry.addEndpoint()
-//        registry.addEndpoint().
+        registry.addEndpoint("/session-endpoint").withSockJS();
     }
+
 
 }
