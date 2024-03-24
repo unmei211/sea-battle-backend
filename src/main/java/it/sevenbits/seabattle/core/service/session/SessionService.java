@@ -5,8 +5,10 @@ import it.sevenbits.seabattle.core.model.session.Session;
 import it.sevenbits.seabattle.core.model.user.User;
 import it.sevenbits.seabattle.core.repository.cell.CellRepository;
 import it.sevenbits.seabattle.core.repository.session.SessionRepository;
+import it.sevenbits.seabattle.core.repository.user.UserRepository;
 import it.sevenbits.seabattle.core.service.user.UserService;
 import it.sevenbits.seabattle.core.validator.session.ArrangementValidator;
+import it.sevenbits.seabattle.web.model.Coords;
 import it.sevenbits.seabattle.web.model.SessionModel;
 import it.sevenbits.seabattle.web.model.ShipArrangement;
 import it.sevenbits.seabattle.web.model.StatePullingRequest;
@@ -180,8 +182,26 @@ public class SessionService {
      * @param sessionId       - session id
      * @param userId          - user id
      * @param shipArrangement - list of ships
+     * @return bool - true or false
      */
-    public void putShips(final Long sessionId, final Long userId, final ShipArrangement shipArrangement) {
-        System.out.println(arrangementValidator.validateArrangementCount(shipArrangement));
+    public boolean putShips(final Long sessionId, final Long userId, final ShipArrangement shipArrangement) {
+        Optional<User> user = userService.getById(userId);
+        Optional<Session> session = sessionRepository.findById(sessionId);
+        if (arrangementValidator.validate(shipArrangement)) {
+            for (List<Coords> coordsList : arrangementValidator.makeShips(shipArrangement)) {
+                for (Coords coords : coordsList) {
+                    Cell cell = new Cell();
+                    cell.setSession(session.get());
+                    cell.setUser(user.get());
+                    cell.setAxis(coords.getAxis());
+                    cell.setOrdinate(coords.getOrdinate());
+                    cell.setContainsShip(true);
+                    cell.setShotDown(false);
+                    cellRepository.save(cell);
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

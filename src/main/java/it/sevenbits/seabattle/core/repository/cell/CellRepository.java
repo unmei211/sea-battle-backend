@@ -1,6 +1,8 @@
 package it.sevenbits.seabattle.core.repository.cell;
 
 import it.sevenbits.seabattle.core.model.cell.Cell;
+import it.sevenbits.seabattle.core.model.session.Session;
+import it.sevenbits.seabattle.core.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -19,4 +21,5 @@ public interface CellRepository extends JpaRepository<Cell, Long> {
      * @return - cell
      */
     Optional<Cell> findCellBySessionIdAndUserIdAndAxisAndOrdinate(Long sessionId, Long userId, int xPos, int yPos);
+
 }

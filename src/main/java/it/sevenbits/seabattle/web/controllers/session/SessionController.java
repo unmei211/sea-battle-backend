@@ -180,8 +180,11 @@ public class SessionController {
             @RequestBody final ShipArrangement shipArrangement
     ) {
         try {
-            sessionService.putShips(sessionId, userId, shipArrangement);
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            if (sessionService.putShips(sessionId, userId, shipArrangement)) {
+                return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            } else {
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
