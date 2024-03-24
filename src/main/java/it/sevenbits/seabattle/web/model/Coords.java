@@ -1,6 +1,8 @@
 package it.sevenbits.seabattle.web.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -8,7 +10,9 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Coords {
-    private int ordinate;
     private int axis;
+    private int ordinate;
 }
