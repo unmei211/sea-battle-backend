@@ -1,5 +1,7 @@
 package it.sevenbits.seabattle.web.controllers.session;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.model.session.Session;
 import it.sevenbits.seabattle.core.service.session.SessionService;
@@ -9,18 +11,17 @@ import it.sevenbits.seabattle.web.model.ShipArrangement;
 import it.sevenbits.seabattle.web.model.session.SessionPendingDTO;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,10 +32,24 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/session")
 @AllArgsConstructor
+//@CrossOrigin("http://localhost:5173")
 public class SessionController {
 
     private SessionService sessionService;
+    private SimpMessagingTemplate simpMessagingTemplate;
+    private ObjectMapper objectMapper;
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    class Mess {
+        private String mess = "my message";
 
+        @Override
+        public String toString() {
+            return mess;
+        }
+    }
     /**
      * Get Session by id
      *
@@ -42,7 +57,7 @@ public class SessionController {
      * @return - session entity
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getSessionData(@PathVariable final Long id) {
+    public ResponseEntity<?> getSessionData(@PathVariable final Long id) throws JsonProcessingException {
         try {
             Session session = sessionService.getById(id).get();
             return new ResponseEntity<>(session, HttpStatus.OK);
@@ -50,6 +65,15 @@ public class SessionController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    //        simpMessagingTemplate.convertAndSend("/topic/sea", objectMapper.writeValueAsString(new Mess()));
+//    @MessageMapping("/sea/{sessionId}")
+//    @SendTo("/topic/sea")
+//    public String handle(String message, @DestinationVariable Long sessionId) {
+//        System.out.println(sessionId);
+//        System.out.println("handle check");
+//        return "my message";
+//    }
 
     /**
      * calls when player make a turn

@@ -6,11 +6,13 @@ import it.sevenbits.seabattle.core.model.user.User;
 import it.sevenbits.seabattle.core.repository.cell.CellRepository;
 import it.sevenbits.seabattle.core.repository.session.SessionRepository;
 import it.sevenbits.seabattle.core.service.user.UserService;
+import it.sevenbits.seabattle.core.util.timer.GameTimer;
 import it.sevenbits.seabattle.web.model.SessionModel;
 import it.sevenbits.seabattle.web.model.ShipArrangement;
 import it.sevenbits.seabattle.web.model.StatePullingRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -28,6 +30,8 @@ public class SessionService {
     private final SessionRepository sessionRepository;
     private final CellRepository cellRepository;
     private final UserService userService;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final GameTimer gameTimer;
 
     /**
      * get session by id
@@ -42,9 +46,11 @@ public class SessionService {
     public Session getActualSession(final Long userId) {
         List<Session> sessions = sessionRepository.findAllByGameState(Session.STATUS_PENDING);
         if(sessions.isEmpty()) {
+            Session session = createSession(userId);
+            gameTimer.addTask();
             //TODO: subscribe to socket
             //TODO: add PendingTaskTimer to timer
-            return createSession(userId);
+            return session;
         } else {
             Optional<User> userSecond = userService.getById(userId);
             Session actualSession = sessions.get(0);

@@ -3,11 +3,7 @@ package it.sevenbits.seabattle.web.controllers.cell;
 import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.service.cell.CellService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,6 +12,7 @@ import java.util.List;
  */
 @RestController("/cells")
 @AllArgsConstructor
+@CrossOrigin("http://localhost:5173")
 public class CellController {
     private final CellService cellService;
 

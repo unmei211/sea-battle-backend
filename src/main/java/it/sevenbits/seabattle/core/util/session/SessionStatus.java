@@ -10,5 +10,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SessionStatus {
-    private String status;
+    private SessionStatusEnum status;
 }
