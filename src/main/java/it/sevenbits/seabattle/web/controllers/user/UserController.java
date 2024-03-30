@@ -73,9 +73,31 @@ public class UserController {
      * @return return user without password
      */
     @PostMapping
-    public UserDTO addUser(
+    public ResponseEntity<?> addUser(
             @RequestBody final UserForm userForm
     ) {
-        return userService.save(userForm);
+        UserDTO user = userService.save(userForm);
+        System.out.println("TEST");
+        if (user != null) {
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(
+            @RequestBody final UserForm userForm
+    ) {
+        try {
+            UserDTO user = userService.loginUser(userForm);
+            if (user == null) {
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            } else {
+                return new ResponseEntity<>(user, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

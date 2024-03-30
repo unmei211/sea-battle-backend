@@ -2,6 +2,7 @@ package it.sevenbits.seabattle.core.model.user;
 
 import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.model.statistic.Statistic;
+import it.sevenbits.seabattle.web.model.user.UserDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -53,5 +54,9 @@ public class User {
     @Override
     public String toString() {
         return "User id: " + id + "\t" + "login: " + login;
+    }
+
+    public UserDTO toDTO() {
+        return new UserDTO(id, login, rating);
     }
 }

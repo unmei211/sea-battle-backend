@@ -7,6 +7,7 @@ import it.sevenbits.seabattle.web.model.UserForm;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -83,7 +84,24 @@ public class UserService {
         userToSave.setLogin(userForm.getLogin());
         userToSave.setPassword(userForm.getPassword());
         userToSave.setRating(0);
+        User user = userRepository.findUserByLogin(userForm.getLogin());
+        if (user != null) {
+            return null;
+        }
         userRepository.save(userToSave);
         return new UserDTO(userToSave.getId(), userToSave.getLogin(), userToSave.getRating());
+    }
+
+    public UserDTO loginUser(final UserForm userForm) {
+        User user = userRepository.findUserByLogin(userForm.getLogin());
+        if (user == null) {
+            return null;
+        } else {
+            if (Objects.equals(user.getPassword(), userForm.getPassword())) {
+                return user.toDTO();
+            } else {
+                return null;
+            }
+        }
     }
 }

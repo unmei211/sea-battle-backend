@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * user repos
  */
 public interface UserRepository extends JpaRepository<User, Long> {
+    User findUserByLogin(String login);
 }
