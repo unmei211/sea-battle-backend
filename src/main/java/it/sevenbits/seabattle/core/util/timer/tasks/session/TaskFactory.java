@@ -8,16 +8,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-@Component
 @AllArgsConstructor
+@Component
 public class TaskFactory {
-    private final SessionService sessionService;
     private final SimpMessagingTemplate simpMessagingTemplate;
-    private final ObjectMapper objectMapper;
     private final TasksHandler tasks;
     private final SessionStatusFactory sessionStatusFactory;
 
-    public <T> SeaTask createTask(Long sessionId, Class<T> clazz) {
+    public <T> SeaTask createTask(final Long sessionId, final Class<T> clazz, SessionService sessionService) {
         if (clazz.equals(PendingSessionTask.class)) {
             return new PendingSessionTask(
                     tasks,

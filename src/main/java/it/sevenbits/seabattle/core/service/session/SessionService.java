@@ -18,6 +18,7 @@ import it.sevenbits.seabattle.web.model.ShipArrangement;
 import it.sevenbits.seabattle.web.model.StatePullingRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -56,7 +57,7 @@ public class SessionService {
         List<Session> sessions = sessionRepository.findAllByGameState(Session.STATUS_PENDING);
         if (sessions.isEmpty()) {
             Session session = createSession(userId);
-            gameTimer.addTask(taskFactory.createTask(session.getId(), PendingSessionTask.class), session.getId());
+            gameTimer.addTask(taskFactory.createTask(session.getId(), PendingSessionTask.class, this), session.getId());
             return session;
         } else {
             Optional<User> userSecond = userService.getById(userId);
@@ -79,6 +80,7 @@ public class SessionService {
         Timestamp timeStamp = new Timestamp(currentDate.getTime());
         Optional<User> firstUser = userService.getById(userId);
         session.setUserFirst(firstUser.get());
+        System.out.println("1");
         session.setCreateDate(timeStamp);
         session.setGameState(Session.STATUS_PENDING);
         return sessionRepository.save(session);
@@ -94,7 +96,7 @@ public class SessionService {
      * @param id - session id
      */
     public void remove(final Long id) {
-
+        sessionRepository.delete(sessionRepository.findById(id).get());
     }
 
     /**

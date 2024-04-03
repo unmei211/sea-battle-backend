@@ -12,7 +12,7 @@ public class PendingSessionTask extends SeaTask {
      * JSON of SessionStatus
      */
     private final String statusIfRun;
-    private static final Long PENDING_SESSION_TASK_DELAY = 30000L;
+    private static final Long PENDING_SESSION_TASK_DELAY = 3000L;
 
     public PendingSessionTask(
             final TasksHandler tasks,
@@ -24,6 +24,7 @@ public class PendingSessionTask extends SeaTask {
         super(tasks, sessionId, PENDING_SESSION_TASK_DELAY);
         this.messagingTemplate = simpMessagingTemplate;
         this.statusIfRun = statusIfRun;
+        this.sessionService = sessionService;
     }
 
     @Override
@@ -34,6 +35,7 @@ public class PendingSessionTask extends SeaTask {
 
     @Override
     public void run() {
+        System.out.println("DELETED");
         sessionService.remove(sessionId);
         messagingTemplate.convertAndSend(
                 channel,

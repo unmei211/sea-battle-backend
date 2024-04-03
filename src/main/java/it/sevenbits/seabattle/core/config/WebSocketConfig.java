@@ -1,6 +1,11 @@
 package it.sevenbits.seabattle.core.config;
 
+import it.sevenbits.seabattle.core.service.session.SessionService;
+import it.sevenbits.seabattle.core.util.timer.tasks.session.TaskFactory;
+import it.sevenbits.seabattle.core.util.timer.tasks.session.TasksHandler;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
