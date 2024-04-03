@@ -7,6 +7,10 @@ import it.sevenbits.seabattle.core.repository.cell.CellRepository;
 import it.sevenbits.seabattle.core.repository.session.SessionRepository;
 import it.sevenbits.seabattle.core.repository.user.UserRepository;
 import it.sevenbits.seabattle.core.service.user.UserService;
+import it.sevenbits.seabattle.core.util.session.SessionStatusFactory;
+import it.sevenbits.seabattle.core.util.timer.GameTimer;
+import it.sevenbits.seabattle.core.util.timer.tasks.session.PendingSessionTask;
+import it.sevenbits.seabattle.core.util.timer.tasks.session.TaskFactory;
 import it.sevenbits.seabattle.core.validator.session.ArrangementValidator;
 import it.sevenbits.seabattle.web.model.Coords;
 import it.sevenbits.seabattle.web.model.SessionModel;
@@ -31,9 +35,12 @@ import java.util.Optional;
 public class SessionService {
 
     private final SessionRepository sessionRepository;
+    private final GameTimer gameTimer;
     private final CellRepository cellRepository;
     private final UserService userService;
     private final ArrangementValidator arrangementValidator;
+    private final SessionStatusFactory sessionStatusFactory;
+    private final TaskFactory taskFactory;
 
     /**
      * get session by id
@@ -48,9 +55,9 @@ public class SessionService {
     public Session getActualSession(final Long userId) {
         List<Session> sessions = sessionRepository.findAllByGameState(Session.STATUS_PENDING);
         if (sessions.isEmpty()) {
-            //TODO: subscribe to socket
-            //TODO: add PendingTaskTimer to timer
-            return createSession(userId);
+            Session session = createSession(userId);
+            gameTimer.addTask(taskFactory.createTask(session.getId(), PendingSessionTask.class), session.getId());
+            return session;
         } else {
             Optional<User> userSecond = userService.getById(userId);
             Session actualSession = sessions.get(0);
@@ -60,6 +67,7 @@ public class SessionService {
             Timestamp timestamp = new Timestamp(date.getTime());
             actualSession.setArrangementStartDate(timestamp);
             //TODO: remove PendingTaskTimer from timer
+            gameTimer.removeTask(actualSession.getId());
             //TODO: notificate FirstUser by messageBroker
             return sessionRepository.save(actualSession);
         }
