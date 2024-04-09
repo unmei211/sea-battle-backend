@@ -7,6 +7,8 @@ import it.sevenbits.seabattle.core.repository.cell.CellRepository;
 import it.sevenbits.seabattle.core.repository.session.SessionRepository;
 import it.sevenbits.seabattle.core.repository.user.UserRepository;
 import it.sevenbits.seabattle.core.service.user.UserService;
+import it.sevenbits.seabattle.core.util.notifier.Notifier;
+import it.sevenbits.seabattle.core.util.session.SessionStatusEnum;
 import it.sevenbits.seabattle.core.util.session.SessionStatusFactory;
 import it.sevenbits.seabattle.core.util.timer.GameTimer;
 import it.sevenbits.seabattle.core.util.timer.tasks.session.PendingSessionTask;
@@ -32,7 +34,6 @@ import java.util.Optional;
  * session service
  */
 @AllArgsConstructor
-@Service
 public class SessionService {
 
     private final SessionRepository sessionRepository;
@@ -40,8 +41,8 @@ public class SessionService {
     private final CellRepository cellRepository;
     private final UserService userService;
     private final ArrangementValidator arrangementValidator;
-    private final SessionStatusFactory sessionStatusFactory;
     private final TaskFactory taskFactory;
+    private final Notifier notifier;
 
     /**
      * get session by id
@@ -54,24 +55,35 @@ public class SessionService {
     }
 
     public Session getActualSession(final Long userId) {
-        List<Session> sessions = sessionRepository.findAllByGameState(Session.STATUS_PENDING);
+        List<Session> sessions = sessionRepository.findAllByGameState(SessionStatusEnum.STATUS_PENDING.toString());
         if (sessions.isEmpty()) {
             Session session = createSession(userId);
-            gameTimer.addTask(taskFactory.createTask(session.getId(), PendingSessionTask.class, this), session.getId());
+            gameTimer.addTask(taskFactory.createTask(session.getId(), PendingSessionTask.class), session.getId());
             return session;
         } else {
             Optional<User> userSecond = userService.getById(userId);
             Session actualSession = sessions.get(0);
             actualSession.setUserSecond(userSecond.get());
-            actualSession.setGameState(Session.STATUS_ARRANGEMENT);
+            actualSession.setGameState(SessionStatusEnum.STATUS_ARRANGEMENT.toString());
             Date date = new Date();
             Timestamp timestamp = new Timestamp(date.getTime());
             actualSession.setArrangementStartDate(timestamp);
-            //TODO: remove PendingTaskTimer from timer
             gameTimer.removeTask(actualSession.getId());
-            //TODO: notificate FirstUser by messageBroker
+
+            notifier.sendSessionArrangement(actualSession.getId());
+
             return sessionRepository.save(actualSession);
         }
+    }
+
+    public void arrangementReject(final Long sessionId) {
+        Session session = sessionRepository.findById(sessionId).get();
+        User userFirst =  session.getUserFirst();
+        User userSecond = session.getUserSecond();
+        cellRepository.findCellBySessionIdAndUserId(sessionId ,userFirst.getId());
+        cellRepository.findCellBySessionIdAndUserId(sessionId, userSecond.getId());
+
+        remove(sessionId);
     }
 
     private Session createSession(final Long userId) {
@@ -82,7 +94,7 @@ public class SessionService {
         session.setUserFirst(firstUser.get());
         System.out.println("1");
         session.setCreateDate(timeStamp);
-        session.setGameState(Session.STATUS_PENDING);
+        session.setGameState(SessionStatusEnum.STATUS_PENDING.toString());
         return sessionRepository.save(session);
     }
 

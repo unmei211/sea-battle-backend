@@ -30,7 +30,6 @@ public class GameTimer {
      * add Task to timer
      * @param timerTask TimerTask
      * @param sessionId sessionId
-     * @param delay time to run in millis
      */
     public void addTask(final SeaTask timerTask, final Long sessionId) {
         System.out.println("run time task is: " + new Date(System.currentTimeMillis() + timerTask.getDelayBeforeExecution()));

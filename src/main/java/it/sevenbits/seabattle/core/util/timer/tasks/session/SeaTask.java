@@ -10,8 +10,8 @@ public class SeaTask extends TimerTask {
     @Getter
     protected final Long sessionId;
 
-    @Getter
-    protected final String channel;
+//    @Getter
+//    protected final String channel;
     @Getter
     private final Long delayBeforeExecution;
     protected SeaTask(
@@ -23,7 +23,7 @@ public class SeaTask extends TimerTask {
         this.tasks = tasks;
         this.sessionId = sessionId;
         this.delayBeforeExecution = delayBeforeExecution;
-        channel = String.format("topic/sea/%d", sessionId);
+//        channel = String.format("topic/sea/%d", sessionId);
     }
 
     @Override

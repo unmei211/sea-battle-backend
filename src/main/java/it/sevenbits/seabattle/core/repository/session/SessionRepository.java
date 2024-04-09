@@ -1,6 +1,9 @@
 package it.sevenbits.seabattle.core.repository.session;
 
 import it.sevenbits.seabattle.core.model.session.Session;
+import it.sevenbits.seabattle.core.model.user.User;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.NamedQuery;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

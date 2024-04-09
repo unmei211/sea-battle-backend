@@ -3,6 +3,7 @@ package it.sevenbits.seabattle.web.controllers.session;
 import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.model.session.Session;
 import it.sevenbits.seabattle.core.service.session.SessionService;
+import it.sevenbits.seabattle.core.util.notifier.Notifier;
 import it.sevenbits.seabattle.web.model.Coords;
 import it.sevenbits.seabattle.web.model.SessionModel;
 import it.sevenbits.seabattle.web.model.ShipArrangement;
@@ -34,6 +35,7 @@ import java.util.Optional;
 public class SessionController {
 
     private SessionService sessionService;
+    private Notifier notifier;
 
     /**
      * Get Session by id
