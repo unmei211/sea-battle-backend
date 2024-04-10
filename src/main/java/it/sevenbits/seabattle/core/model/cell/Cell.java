@@ -49,4 +49,7 @@ public class Cell {
 
     @Column
     private boolean containsShip;
+
+    @Column
+    private String shipId;
 }

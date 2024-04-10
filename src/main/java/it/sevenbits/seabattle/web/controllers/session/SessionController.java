@@ -4,6 +4,7 @@ import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.model.session.Session;
 import it.sevenbits.seabattle.core.service.session.SessionService;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
+import it.sevenbits.seabattle.core.util.session.SessionStatusEnum;
 import it.sevenbits.seabattle.web.model.Coords;
 import it.sevenbits.seabattle.web.model.SessionModel;
 import it.sevenbits.seabattle.web.model.ShipArrangement;
@@ -101,7 +102,7 @@ public class SessionController {
     ) {
         Session session = sessionService.getActualSession(userDTO.getId());
         ResponseEntity<SessionPendingDTO> response;
-        if (session.getGameState().equals(Session.STATUS_PENDING)) {
+        if (session.getGameState().equals(SessionStatusEnum.STATUS_PENDING.toString())) {
             response = new ResponseEntity<>(Session.toPendingDTO(session), HttpStatus.CREATED);
         } else {
             response = new ResponseEntity<>(Session.toPendingDTO(session), HttpStatus.OK);
@@ -182,7 +183,7 @@ public class SessionController {
             @RequestBody final ShipArrangement shipArrangement
     ) {
         try {
-            if (sessionService.putShips(sessionId, userId, shipArrangement)) {
+            if (sessionService.tryArrangement(sessionId, userId, shipArrangement)) {
                 return new ResponseEntity<>(HttpStatus.ACCEPTED);
             } else {
                 return new ResponseEntity<>(HttpStatus.CONFLICT);

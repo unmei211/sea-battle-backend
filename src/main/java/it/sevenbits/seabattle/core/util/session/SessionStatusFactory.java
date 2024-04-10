@@ -11,11 +11,9 @@ import java.util.Optional;
 @Component
 public class SessionStatusFactory {
     HashMap<SessionStatusEnum, SessionStatus> statusMap;
-    private final ObjectMapper objectMapper;
 
     public SessionStatusFactory(ObjectMapper objectMapper) {
         statusMap = new HashMap<>();
-        this.objectMapper = objectMapper;
 
         Arrays.stream(SessionStatusEnum.values()).forEach(
                 sessionStatusEnum ->
@@ -24,17 +22,7 @@ public class SessionStatusFactory {
         );
     }
 
-    public Optional<SessionStatus> getSessionStatusByEnum(final SessionStatusEnum statusEnum) {
+    public Optional<SessionStatus> getSessionStatus(final SessionStatusEnum statusEnum) {
         return Optional.of(statusMap.get(statusEnum));
-    }
-
-    public String getSessionStatusJSONByEnum(final SessionStatusEnum statusEnum) {
-        String status;
-        try {
-            status = objectMapper.writeValueAsString(statusMap.get(statusEnum));
-        } catch (Exception e) {
-            status = String.format("{ status: %s }", SessionStatusEnum.STATUS_UNEXPECTED);
-        }
-        return status;
     }
 }

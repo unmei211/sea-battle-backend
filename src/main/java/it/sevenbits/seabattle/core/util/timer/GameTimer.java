@@ -42,6 +42,8 @@ public class GameTimer {
      * @param sessionId sessionId
      */
     public void removeTask(final Long sessionId) {
+        tasks.get(sessionId).cancel();
+        System.out.println("Bundled task with session Id" + sessionId + " removed");
         tasks.delete(sessionId);
     }
 

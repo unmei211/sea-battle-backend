@@ -30,6 +30,7 @@ public class PendingSessionTask extends SeaTask {
 
     @Override
     public void run() {
+        System.out.println("pending task reject is running for session: " + sessionId);
         sessionService.remove(sessionId);
         notifier.sendSessionPendingReject(sessionId);
         super.run();

@@ -11,6 +11,7 @@ import it.sevenbits.seabattle.core.util.notifier.Notifier;
 import it.sevenbits.seabattle.core.util.session.SessionStatusEnum;
 import it.sevenbits.seabattle.core.util.session.SessionStatusFactory;
 import it.sevenbits.seabattle.core.util.timer.GameTimer;
+import it.sevenbits.seabattle.core.util.timer.tasks.session.ArrangementTask;
 import it.sevenbits.seabattle.core.util.timer.tasks.session.PendingSessionTask;
 import it.sevenbits.seabattle.core.util.timer.tasks.session.TaskFactory;
 import it.sevenbits.seabattle.core.validator.session.ArrangementValidator;
@@ -25,10 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
+import static java.util.UUID.randomUUID;
 
 /**
  * session service
@@ -69,8 +69,8 @@ public class SessionService {
             Timestamp timestamp = new Timestamp(date.getTime());
             actualSession.setArrangementStartDate(timestamp);
             gameTimer.removeTask(actualSession.getId());
-
-            notifier.sendSessionArrangement(actualSession.getId());
+            gameTimer.addTask(taskFactory.createTask(actualSession.getId(), ArrangementTask.class), actualSession.getId());
+            notifier.sendSessionArrangementSuccess(actualSession.getId());
 
             return sessionRepository.save(actualSession);
         }
@@ -78,9 +78,9 @@ public class SessionService {
 
     public void arrangementReject(final Long sessionId) {
         Session session = sessionRepository.findById(sessionId).get();
-        User userFirst =  session.getUserFirst();
+        User userFirst = session.getUserFirst();
         User userSecond = session.getUserSecond();
-        cellRepository.findCellBySessionIdAndUserId(sessionId ,userFirst.getId());
+        cellRepository.findCellBySessionIdAndUserId(sessionId, userFirst.getId());
         cellRepository.findCellBySessionIdAndUserId(sessionId, userSecond.getId());
 
         remove(sessionId);
@@ -92,7 +92,6 @@ public class SessionService {
         Timestamp timeStamp = new Timestamp(currentDate.getTime());
         Optional<User> firstUser = userService.getById(userId);
         session.setUserFirst(firstUser.get());
-        System.out.println("1");
         session.setCreateDate(timeStamp);
         session.setGameState(SessionStatusEnum.STATUS_PENDING.toString());
         return sessionRepository.save(session);
@@ -198,27 +197,71 @@ public class SessionService {
         return session.get().getWinner().getId();
     }
 
+    private User getRandomTurnedUser(
+            final User userFirst,
+            final User userSecond
+    ) {
+        Random random = new Random();
+        if (Math.abs(random.nextInt(2)) == 0) {
+            return userFirst;
+        } else {
+            return userSecond;
+        }
+    }
+
+
+    public boolean tryArrangement(
+            final Long sessionId,
+            final Long userId,
+            final ShipArrangement shipArrangement
+    ) {
+        Session session = sessionRepository.findById(sessionId).get();
+
+        if (!putShips(session, userId, shipArrangement)) {
+            return false;
+        }
+
+        User userFirst = session.getUserFirst();
+        User userSecond = session.getUserSecond();
+
+        List<Cell> userFirstCells = cellRepository.findCellBySessionIdAndUserId(sessionId, userFirst.getId());
+        List<Cell> userSecondCells = cellRepository.findCellBySessionIdAndUserId(sessionId, userSecond.getId());
+
+        if (!userFirstCells.isEmpty() && !userSecondCells.isEmpty()) {
+            session.setGameState(SessionStatusEnum.STATUS_GAME.toString());
+            User turnedUser = getRandomTurnedUser(userFirst, userSecond);
+            session.setTurnUser(turnedUser);
+            Date currentDate = new Date();
+            session.setPlayerTurnStartDate(new Timestamp(currentDate.getTime()));
+            sessionRepository.save(session);
+            gameTimer.removeTask(sessionId);
+            notifier.sendSessionGame(sessionId);
+        }
+
+        return true;
+    }
+
     /**
      * put ships specific user and fill other cells
      *
-     * @param sessionId       - session id
      * @param userId          - user id
      * @param shipArrangement - list of ships
      * @return bool - true or false
      */
-    public boolean putShips(final Long sessionId, final Long userId, final ShipArrangement shipArrangement) {
+    public boolean putShips(final Session session, final Long userId, final ShipArrangement shipArrangement) {
         Optional<User> user = userService.getById(userId);
-        Optional<Session> session = sessionRepository.findById(sessionId);
         if (arrangementValidator.validate(shipArrangement)) {
             for (List<Coords> coordsList : arrangementValidator.makeShips(shipArrangement)) {
+                String currentShipUUID = randomUUID().toString();
                 for (Coords coords : coordsList) {
                     Cell cell = new Cell();
-                    cell.setSession(session.get());
+                    cell.setSession(session);
                     cell.setUser(user.get());
                     cell.setAxis(coords.getAxis());
                     cell.setOrdinate(coords.getOrdinate());
                     cell.setContainsShip(true);
                     cell.setShotDown(false);
+                    cell.setShipId(currentShipUUID);
                     cellRepository.save(cell);
                 }
             }

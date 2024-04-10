@@ -25,8 +25,9 @@ public class ArrangementTask extends SeaTask {
 
     @Override
     public void run() {
+        System.out.println("arrangement task reject is running for session: " + sessionId);
         sessionService.arrangementReject(sessionId);
-        notifier.sendSessionArrangement(sessionId);
+        notifier.sendSessionArrangementReject(sessionId);
         super.run();
     }
 }

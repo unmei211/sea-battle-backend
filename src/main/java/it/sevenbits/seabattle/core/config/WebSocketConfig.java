@@ -1,5 +1,6 @@
 package it.sevenbits.seabattle.core.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.sevenbits.seabattle.core.service.session.SessionService;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
 import it.sevenbits.seabattle.core.util.session.SessionStatusFactory;
@@ -24,19 +25,22 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/sea").setAllowedOrigins("http://localhost:5173").withSockJS();
-        registry.addEndpoint("/sea").setAllowedOrigins("http://localhost:5174").withSockJS();
+//        registry.addEndpoint("/sea").setAllowedOrigins("http://localhost:5173").withSockJS();
+//        registry.addEndpoint("/sea").setAllowedOrigins("/**").withSockJS();
+        registry.addEndpoint("/sea").setAllowedOriginPatterns("*").withSockJS();
     }
 
     @Bean
     public Notifier gameNotifier(
             SimpMessagingTemplate simpMessagingTemplate,
-            SessionStatusFactory sessionStatusFactory
+            SessionStatusFactory sessionStatusFactory,
+            ObjectMapper objectMapper
     ) {
         return new Notifier(
                 "/topic/sea/%d",
                 simpMessagingTemplate,
-                sessionStatusFactory
+                sessionStatusFactory,
+                objectMapper
         );
     }
 }

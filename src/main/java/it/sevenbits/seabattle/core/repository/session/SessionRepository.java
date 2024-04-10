@@ -13,4 +13,5 @@ import java.util.List;
 
 public interface SessionRepository extends JpaRepository<Session, Long> {
     List<Session> findAllByGameState(String state);
+
 }

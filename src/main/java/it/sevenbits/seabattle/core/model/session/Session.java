@@ -66,14 +66,6 @@ public class Session {
     @Column(name = "target_cell_id")
     private Long targetCellId;
 
-    public static final String STATUS_PENDING = "pending";
-    public static final String STATUS_ARRANGEMENT = "arrangement";
-    public static final String STATUS_GAME = "game";
-    public static final String STATUS_FINISH = "finish";
-
-    //    public static <T> T toDto(Class<T> SessionDTO, Session session) {
-//
-//    }
     public static SessionPendingDTO toPendingDTO(final Session session) {
         SessionPendingDTO sessionPendingDTO = new SessionPendingDTO();
         sessionPendingDTO.setId(session.getId());
