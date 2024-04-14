@@ -13,6 +13,7 @@ import it.sevenbits.seabattle.core.util.session.SessionStatusEnum;
 import it.sevenbits.seabattle.core.util.session.SessionStatusFactory;
 import it.sevenbits.seabattle.core.util.timer.GameTimer;
 import it.sevenbits.seabattle.core.util.timer.tasks.session.ArrangementTask;
+import it.sevenbits.seabattle.core.util.timer.tasks.session.DeleteSessionTask;
 import it.sevenbits.seabattle.core.util.timer.tasks.session.PendingSessionTask;
 import it.sevenbits.seabattle.core.util.timer.tasks.session.TaskFactory;
 import it.sevenbits.seabattle.core.validator.session.ArrangementValidator;
@@ -281,6 +282,11 @@ public class SessionService {
         );
         session.setGameState(SessionStatusEnum.STATUS_FINISH.toString());
         session.setWinner(winner);
+
+        gameTimer.addTask(
+                taskFactory.createTask(sessionId, DeleteSessionTask.class),
+                sessionId
+        );
 
         return sessionRepository.save(session);
     }

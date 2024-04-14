@@ -12,18 +12,21 @@ public class GameProcessTask extends SeaTask {
     private final Notifier notifier;
     private final SessionService sessionService;
     private final GameProcessService gameProcessService;
+    private final TaskFactory taskFactory;
 
     public GameProcessTask(
             final TasksHandler tasks,
             final SessionService sessionService,
             final Long sessionId,
             final Notifier notifier,
-            final GameProcessService gameProcessService
+            final GameProcessService gameProcessService,
+            final TaskFactory taskFactory
     ) {
         super(tasks, sessionId, GAME_PROCESS_TASK_DELAY);
         this.sessionService = sessionService;
         this.notifier = notifier;
         this.gameProcessService = gameProcessService;
+        this.taskFactory = taskFactory;
     }
 
     @Override
