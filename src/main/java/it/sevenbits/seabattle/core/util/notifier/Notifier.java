@@ -71,5 +71,12 @@ public class Notifier {
                 sessionStatusFactory.getSessionStatus(SessionStatusEnum.STATUS_GAME)
         );
     }
+
+    public void sendSessionEnd(Long sessionId) {
+        sendJsonMessage(
+                sessionId,
+                sessionStatusFactory.getSessionStatus(SessionStatusEnum.STATUS_FINISH)
+        );
+    }
 }
 
