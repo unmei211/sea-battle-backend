@@ -8,6 +8,7 @@ import it.sevenbits.seabattle.core.util.session.SessionStatusEnum;
 import it.sevenbits.seabattle.web.model.Coords;
 import it.sevenbits.seabattle.web.model.SessionModel;
 import it.sevenbits.seabattle.web.model.ShipArrangement;
+import it.sevenbits.seabattle.web.model.StatePullingResponse;
 import it.sevenbits.seabattle.web.model.session.SessionPendingDTO;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
 import lombok.AllArgsConstructor;
@@ -138,9 +139,10 @@ public class SessionController {
      * @param sessionId - session id
      */
     @GetMapping("/{sessionId}/state")
-    public void statePulling(
+    public ResponseEntity<StatePullingResponse> statePulling(
             @PathVariable final Long sessionId
     ) {
+        return new ResponseEntity<>(sessionService.statePulling(sessionId), HttpStatus.OK);
     }
 
     /**

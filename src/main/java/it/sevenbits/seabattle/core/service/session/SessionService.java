@@ -18,12 +18,8 @@ import it.sevenbits.seabattle.core.validator.session.ArrangementValidator;
 import it.sevenbits.seabattle.web.model.Coords;
 import it.sevenbits.seabattle.web.model.SessionModel;
 import it.sevenbits.seabattle.web.model.ShipArrangement;
-import it.sevenbits.seabattle.web.model.StatePullingRequest;
+import it.sevenbits.seabattle.web.model.StatePullingResponse;
 import lombok.AllArgsConstructor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -161,6 +157,17 @@ public class SessionService {
      */
     public String makeTurn(final Long sessionId, final Long userId, final int xPos, final int yPos) {
         Optional<Cell> cell = cellRepository.findCellBySessionIdAndUserIdAndAxisAndOrdinate(sessionId, userId, xPos, yPos);
+        if (cell.isEmpty()) {
+            Cell newCell = new Cell();
+            newCell.setSession(sessionRepository.findById(sessionId).get());
+            newCell.setAxis(xPos);
+            newCell.setOrdinate(yPos);
+            newCell.setUser(userService.getById(userId).get());
+            newCell.setShotDown(true);
+            newCell.setContainsShip(false);
+            cellRepository.save(newCell);
+            return "miss";
+        }
         if (cell.get().isShotDown()) {
             return "Already attacked";
         }
@@ -182,8 +189,8 @@ public class SessionService {
      * @param sessionId - session id
      * @return nothing
      */
-    public StatePullingRequest statePulling(final Long sessionId) {
-        return new StatePullingRequest();
+    public StatePullingResponse statePulling(final Long sessionId) {
+        return new StatePullingResponse(sessionRepository.findById(sessionId).get().getGameState());
     }
 
     /**
