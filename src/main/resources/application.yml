@@ -3,11 +3,11 @@ spring:
     locations: classpath:migrations
     url: jdbc:postgresql://localhost:5432/sea_battle
     user: postgres
-    password: cisco
+    password: 12345
   datasource:
     url: jdbc:postgresql://localhost:5432/sea_battle
     username: postgres
-    password: cisco
+    password: 12345
   jpa:
     show-sql: true
     hibernate:
