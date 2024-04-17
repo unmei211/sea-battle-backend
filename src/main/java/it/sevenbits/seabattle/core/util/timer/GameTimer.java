@@ -32,6 +32,10 @@ public class GameTimer {
      * @param sessionId sessionId
      */
     public void addTask(final SeaTask timerTask, final Long sessionId) {
+        if (timerTask == null) {
+            System.out.println("timerTask is null");
+            return;
+        }
         System.out.println("run time task is: " + new Date(System.currentTimeMillis() + timerTask.getDelayBeforeExecution()));
         timer.schedule(timerTask, timerTask.getDelayBeforeExecution());
         tasks.add(sessionId, timerTask);
@@ -42,6 +46,10 @@ public class GameTimer {
      * @param sessionId sessionId
      */
     public void removeTask(final Long sessionId) {
+        if (!tasks.contains(sessionId)) {
+            System.out.println("Not found bundled task with sessionId");
+            return;
+        }
         System.out.println("Bundled task with session Id" + sessionId + " removed");
         tasks.get(sessionId).cancel();
         tasks.delete(sessionId);
