@@ -173,7 +173,7 @@ public class SessionService {
             newCell.setUser(userService.getById(userId).get());
             newCell.setShotDown(true);
             newCell.setContainsShip(false);
-            cellRepository.save(newCell);
+            cell = Optional.of(cellRepository.save(newCell));
             response = "miss";
         }
 
@@ -286,6 +286,7 @@ public class SessionService {
             session.setPlayerTurnStartDate(new Timestamp(currentDate.getTime()));
             sessionRepository.save(session);
             gameTimer.removeTask(sessionId);
+            gameTimer.addTask(taskFactory.createTask(sessionId, GameProcessTask.class), sessionId);
             notifier.sendSessionGame(sessionId);
         }
 
