@@ -199,11 +199,13 @@ public class SessionService {
 
         if (cellRepository.existsCellByUserIdAndSessionIdAndIsShotDownFalse(nextTurnedUser.getId(), sessionId)) {
             session.get().setTurnUser(nextTurnedUser);
+            gameTimer.removeTask(sessionId);
+            gameTimer.addTask(taskFactory.createTask(sessionId, GameProcessTask.class), sessionId);
         } else {
             session.get().setWinner(userService.getById(userId).get());
             session.get().setGameState(SessionStatusEnum.STATUS_FINISH.toString());
             gameTimer.removeTask(sessionId);
-            gameTimer.addTask(taskFactory.createTask(sessionId, GameProcessTask.class), sessionId);
+            gameTimer.addTask(taskFactory.createTask(sessionId, DeleteSessionTask.class), sessionId);
             notifier.sendSessionEnd(sessionId);
         }
         sessionRepository.save(session.get());
