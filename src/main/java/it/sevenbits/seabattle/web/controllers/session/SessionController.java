@@ -63,12 +63,12 @@ public class SessionController {
             @PathVariable final Long userId,
             @RequestBody final Coords coords
     ) {
-        try {
+        //try {
             String result = sessionService.makeTurn(sessionId, userId, coords.getAxis(), coords.getOrdinate());
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        //} catch (Exception e) {
+          //  return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        //}
     }
 
     /**

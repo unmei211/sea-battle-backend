@@ -7,13 +7,18 @@ public class DeleteSessionTask extends SeaTask {
     private final SessionService sessionService;
     private static final Long DELETE_SESSION_TASK_DELAY = 100000L;
 
-    public DeleteSessionTask(
+    public  DeleteSessionTask(
             TasksHandler tasks,
             Long sessionId,
             SessionService sessionService
     ) {
         super(tasks, sessionId, DELETE_SESSION_TASK_DELAY);
         this.sessionService = sessionService;
+    }
+
+    @Override
+    public boolean cancel() {
+        return super.cancel();
     }
 
     @Override

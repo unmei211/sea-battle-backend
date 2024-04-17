@@ -151,12 +151,18 @@ public class SessionService {
      * calls when player make turn, return result (shoot or miss)
      *
      * @param sessionId - session id
-     * @param userId    - user id
+     * @param myUserId  - user id
      * @param xPos      - x coordinate
      * @param yPos      - y coordinate
      * @return result (may error)
      */
-    public String makeTurn(final Long sessionId, final Long userId, final int xPos, final int yPos) {
+    public String makeTurn(final Long sessionId, final Long myUserId, final int xPos, final int yPos) {
+        Long userId;
+        if (Objects.equals(myUserId, sessionRepository.findById(sessionId).get().getUserFirst().getId())) {
+            userId = sessionRepository.findById(sessionId).get().getUserSecond().getId();
+        } else {
+            userId = sessionRepository.findById(sessionId).get().getUserFirst().getId();
+        }
         Optional<Cell> cell = cellRepository.findCellBySessionIdAndUserIdAndAxisAndOrdinate(sessionId, userId, xPos, yPos);
         String response = "";
 

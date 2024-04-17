@@ -36,7 +36,7 @@ public class GameTimer {
             System.out.println("timerTask is null");
             return;
         }
-        System.out.println("run time task is: " + new Date(System.currentTimeMillis() + timerTask.getDelayBeforeExecution()));
+        System.out.println("task" + timerTask + "  run time task is: " + new Date(System.currentTimeMillis() + timerTask.getDelayBeforeExecution()));
         timer.schedule(timerTask, timerTask.getDelayBeforeExecution());
         tasks.add(sessionId, timerTask);
     }
