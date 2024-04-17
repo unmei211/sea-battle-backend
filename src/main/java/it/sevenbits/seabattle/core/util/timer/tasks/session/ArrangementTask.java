@@ -20,7 +20,8 @@ public class ArrangementTask extends SeaTask {
 
     @Override
     public boolean cancel() {
-        return super.cancel();
+        super.cancel();
+        return true;
     }
 
     @Override
