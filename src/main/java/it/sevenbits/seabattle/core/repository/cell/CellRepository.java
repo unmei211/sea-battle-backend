@@ -26,4 +26,6 @@ public interface CellRepository extends JpaRepository<Cell, Long> {
     List<Cell> findCellBySessionIdAndUserId(Long sessionId, Long userId);
 
     List<Cell> findAllByShipId(String shipId);
+    Boolean existsCellByUserIdAndSessionIdAndIsShotDownFalse(Long userId, Long sessionId);
+//    Boolean existsCellBySessionIdAndShotDownIsFalseAndUserId(Long sessionId, Long userId);
 }

@@ -1,6 +1,7 @@
 package it.sevenbits.seabattle.core.util.timer.tasks.session;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.sevenbits.seabattle.core.service.processing.GameProcessService;
 import it.sevenbits.seabattle.core.service.session.SessionService;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
 import it.sevenbits.seabattle.core.util.session.SessionStatusEnum;
@@ -17,7 +18,8 @@ public class TaskFactory {
     private final TasksHandler tasks;
     @Setter
     private SessionService sessionService;
-
+    @Setter
+    private GameProcessService gameProcessService;
     public TaskFactory(
             final Notifier notifier,
             TasksHandler tasks
@@ -36,6 +38,10 @@ public class TaskFactory {
             );
         } else if (clazz.equals(ArrangementTask.class)) {
             return new ArrangementTask(tasks, sessionId, sessionService, notifier);
+        } else if (clazz.equals(GameProcessTask.class)) {
+            return new GameProcessTask(tasks, sessionService, sessionId, notifier, gameProcessService, this);
+        } else if (clazz.equals(DeleteSessionTask.class)) {
+            return new DeleteSessionTask(tasks, sessionId, sessionService);
         }
         return null;
     }

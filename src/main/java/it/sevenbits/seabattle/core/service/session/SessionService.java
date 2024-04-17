@@ -6,16 +6,14 @@ import it.sevenbits.seabattle.core.model.user.User;
 import it.sevenbits.seabattle.core.repository.cell.CellRepository;
 import it.sevenbits.seabattle.core.repository.session.SessionRepository;
 import it.sevenbits.seabattle.core.repository.user.UserRepository;
+import it.sevenbits.seabattle.core.service.processing.GameProcessService;
 import it.sevenbits.seabattle.core.service.user.UserService;
 import it.sevenbits.seabattle.core.util.exceptions.NotFoundException;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
 import it.sevenbits.seabattle.core.util.session.SessionStatusEnum;
 import it.sevenbits.seabattle.core.util.session.SessionStatusFactory;
 import it.sevenbits.seabattle.core.util.timer.GameTimer;
-import it.sevenbits.seabattle.core.util.timer.tasks.session.ArrangementTask;
-import it.sevenbits.seabattle.core.util.timer.tasks.session.DeleteSessionTask;
-import it.sevenbits.seabattle.core.util.timer.tasks.session.PendingSessionTask;
-import it.sevenbits.seabattle.core.util.timer.tasks.session.TaskFactory;
+import it.sevenbits.seabattle.core.util.timer.tasks.session.*;
 import it.sevenbits.seabattle.core.validator.session.ArrangementValidator;
 import it.sevenbits.seabattle.web.model.Coords;
 import it.sevenbits.seabattle.web.model.SessionModel;
@@ -41,6 +39,7 @@ public class SessionService {
     private final ArrangementValidator arrangementValidator;
     private final TaskFactory taskFactory;
     private final Notifier notifier;
+    private final GameProcessService gameProcessService;
 
     /**
      * get session by id
@@ -160,6 +159,12 @@ public class SessionService {
     public String makeTurn(final Long sessionId, final Long userId, final int xPos, final int yPos) {
         Optional<Cell> cell = cellRepository.findCellBySessionIdAndUserIdAndAxisAndOrdinate(sessionId, userId, xPos, yPos);
         String response = "";
+
+        if (cell.isPresent() && cell.get().isShotDown()) {
+            response = "Already attacked";
+            return response;
+        }
+
         if (cell.isEmpty()) {
             Cell newCell = new Cell();
             newCell.setSession(sessionRepository.findById(sessionId).get());
@@ -171,13 +176,12 @@ public class SessionService {
             cellRepository.save(newCell);
             response = "miss";
         }
-        if (cell.get().isShotDown()) {
-            response = "Already attacked";
-        }
+
         cell.get().setShotDown(true);
         cellRepository.save(cell.get());
         Optional<Session> session = sessionRepository.findById(sessionId);
         session.get().setTargetCellId(cell.get().getId());
+
         if (response.isEmpty()) {
             response = "catch";
             boolean killed = true;
@@ -191,10 +195,19 @@ public class SessionService {
                 response = "killed";
             }
         }
-        if (!response.equals("Already attacked")) {
-            session.get().setTurnUser(getNextTurnedUser(session.get()));
-            sessionRepository.save(session.get());
+        User nextTurnedUser = getNextTurnedUser(session.get());
+
+        if (cellRepository.existsCellByUserIdAndSessionIdAndIsShotDownFalse(nextTurnedUser.getId(), sessionId)) {
+            session.get().setTurnUser(nextTurnedUser);
+        } else {
+            session.get().setWinner(userService.getById(userId).get());
+            session.get().setGameState(SessionStatusEnum.STATUS_FINISH.toString());
+            gameTimer.removeTask(sessionId);
+            gameTimer.addTask(taskFactory.createTask(sessionId, GameProcessTask.class), sessionId);
+            notifier.sendSessionEnd(sessionId);
         }
+        sessionRepository.save(session.get());
+
         System.out.println(session.get().getTurnUser().getId() + " - user turn");
 
         return response;

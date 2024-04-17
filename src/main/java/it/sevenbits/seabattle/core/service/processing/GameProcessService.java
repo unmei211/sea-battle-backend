@@ -8,11 +8,8 @@ import it.sevenbits.seabattle.core.util.exceptions.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
-
-@Service
 @AllArgsConstructor
 public class GameProcessService {
-    private final SessionService sessionService;
     private final SessionRepository sessionRepository;
 
     public User getCurrentUser(final Long sessionId) {

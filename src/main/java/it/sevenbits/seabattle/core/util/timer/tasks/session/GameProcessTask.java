@@ -12,7 +12,6 @@ public class GameProcessTask extends SeaTask {
     private final Notifier notifier;
     private final SessionService sessionService;
     private final GameProcessService gameProcessService;
-    private final TaskFactory taskFactory;
 
     public GameProcessTask(
             final TasksHandler tasks,
@@ -26,7 +25,6 @@ public class GameProcessTask extends SeaTask {
         this.sessionService = sessionService;
         this.notifier = notifier;
         this.gameProcessService = gameProcessService;
-        this.taskFactory = taskFactory;
     }
 
     @Override
