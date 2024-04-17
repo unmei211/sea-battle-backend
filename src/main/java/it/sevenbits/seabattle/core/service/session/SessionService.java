@@ -176,10 +176,28 @@ public class SessionService {
         Optional<Session> session = sessionRepository.findById(sessionId);
         session.get().setTargetCellId(cell.get().getId());
 
+        String response;
         if (cell.get().isContainsShip()) {
-            return "catch";
+            response = "catch";
         } else {
-            return "miss";
+            response = "miss";
+        }
+
+        session.get().setTurnUser(getNextTurnedUser(session.get()));
+        sessionRepository.save(session.get());
+
+        return response;
+    }
+
+    public User getNextTurnedUser(final Session session) {
+        User currentTurnedUser = session.getTurnUser();
+        User first = session.getUserFirst();
+        User second = session.getUserSecond();
+
+        if (first.getId().equals(currentTurnedUser.getId())) {
+            return second;
+        } else {
+            return first;
         }
     }
 
