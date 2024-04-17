@@ -157,6 +157,7 @@ public class SessionService {
      */
     public String makeTurn(final Long sessionId, final Long userId, final int xPos, final int yPos) {
         Optional<Cell> cell = cellRepository.findCellBySessionIdAndUserIdAndAxisAndOrdinate(sessionId, userId, xPos, yPos);
+        String response = "";
         if (cell.isEmpty()) {
             Cell newCell = new Cell();
             newCell.setSession(sessionRepository.findById(sessionId).get());
@@ -166,25 +167,23 @@ public class SessionService {
             newCell.setShotDown(true);
             newCell.setContainsShip(false);
             cellRepository.save(newCell);
-            return "miss";
+            response = "miss";
         }
         if (cell.get().isShotDown()) {
-            return "Already attacked";
+            response = "Already attacked";
         }
         cell.get().setShotDown(true);
         cellRepository.save(cell.get());
         Optional<Session> session = sessionRepository.findById(sessionId);
         session.get().setTargetCellId(cell.get().getId());
-
-        String response;
-        if (cell.get().isContainsShip()) {
+        if (response.isEmpty()) {
             response = "catch";
-        } else {
-            response = "miss";
         }
-
-        session.get().setTurnUser(getNextTurnedUser(session.get()));
-        sessionRepository.save(session.get());
+        if (!response.equals("Already attacked")) {
+            session.get().setTurnUser(getNextTurnedUser(session.get()));
+            sessionRepository.save(session.get());
+        }
+        System.out.println(session.get().getTurnUser().getId() + " - user turn");
 
         return response;
     }
