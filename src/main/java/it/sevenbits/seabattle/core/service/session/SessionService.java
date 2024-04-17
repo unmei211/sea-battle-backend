@@ -286,6 +286,7 @@ public class SessionService {
             session.setPlayerTurnStartDate(new Timestamp(currentDate.getTime()));
             sessionRepository.save(session);
             gameTimer.removeTask(sessionId);
+            gameTimer.addTask(taskFactory.createTask(sessionId, GameProcessTask.class), sessionId);
             notifier.sendSessionGame(sessionId);
         }
 
