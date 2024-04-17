@@ -9,7 +9,7 @@ spring:
     username: postgres
     password: cisco
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
 server:

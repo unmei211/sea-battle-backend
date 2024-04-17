@@ -8,7 +8,7 @@ import it.sevenbits.seabattle.core.util.exceptions.NotFoundException;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
 
 public class GameProcessTask extends SeaTask {
-    private static final Long GAME_PROCESS_TASK_DELAY = 30000L;
+    private static final Long GAME_PROCESS_TASK_DELAY = 3000000000L;
     private final Notifier notifier;
     private final SessionService sessionService;
     private final GameProcessService gameProcessService;
