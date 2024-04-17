@@ -178,6 +178,16 @@ public class SessionService {
         session.get().setTargetCellId(cell.get().getId());
         if (response.isEmpty()) {
             response = "catch";
+            boolean killed = true;
+            for (Cell c : cellRepository.findAllByShipId(cell.get().getShipId())) {
+                if (!c.isShotDown()) {
+                    killed = false;
+                    break;
+                }
+            }
+            if (killed) {
+                response = "killed";
+            }
         }
         if (!response.equals("Already attacked")) {
             session.get().setTurnUser(getNextTurnedUser(session.get()));

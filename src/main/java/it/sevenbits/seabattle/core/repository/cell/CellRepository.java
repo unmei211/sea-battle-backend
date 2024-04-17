@@ -24,4 +24,6 @@ public interface CellRepository extends JpaRepository<Cell, Long> {
     Optional<Cell> findCellBySessionIdAndUserIdAndAxisAndOrdinate(Long sessionId, Long userId, int xPos, int yPos);
 
     List<Cell> findCellBySessionIdAndUserId(Long sessionId, Long userId);
+
+    List<Cell> findAllByShipId(String shipId);
 }
