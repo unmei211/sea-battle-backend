@@ -71,7 +71,6 @@ public class UserController {
             @RequestBody final UserForm userForm
     ) {
         UserDTO user = userService.save(userForm);
-        System.out.println("TEST");
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } else {
@@ -86,12 +85,12 @@ public class UserController {
         try {
             UserDTO user = userService.loginUser(userForm);
             if (user == null) {
-                return new ResponseEntity<>(HttpStatus.CONFLICT);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
                 return new ResponseEntity<>(user, HttpStatus.OK);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
     }
 }

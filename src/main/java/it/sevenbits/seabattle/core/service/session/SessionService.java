@@ -60,6 +60,9 @@ public class SessionService {
         } else {
             Optional<User> userSecond = userService.getById(userId);
             Session actualSession = sessions.get(0);
+            if (Objects.equals(actualSession.getUserFirst().getId(), userId)) {
+                throw new RuntimeException("You already in session");
+            }
             actualSession.setUserSecond(userSecond.get());
             actualSession.setGameState(SessionStatusEnum.STATUS_ARRANGEMENT.toString());
             Date date = new Date();
@@ -86,6 +89,10 @@ public class SessionService {
     private Session createSession(final Long userId) {
         Session session = new Session();
         Date currentDate = new Date();
+        Optional<User> user = userService.getById(userId);
+        if (sessionRepository.findSessionByUserFirstOrUserSecond(user.get(), user.get()) != null) {
+            throw new RuntimeException("User already have session");
+        }
         Timestamp timeStamp = new Timestamp(currentDate.getTime());
         Optional<User> firstUser = userService.getById(userId);
         session.setUserFirst(firstUser.get());

@@ -15,7 +15,7 @@ public class SessionPendingDTO {
     private Long id;
     private Timestamp createDate;
     private String gameState;
-    private User userFirst;
-    private User userSecond;
+    private Long userFirst;
+    private Long userSecond;
     private Timestamp arrangementStartDate;
 }

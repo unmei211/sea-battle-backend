@@ -63,12 +63,12 @@ public class SessionController {
             @PathVariable final Long userId,
             @RequestBody final Coords coords
     ) {
-        //try {
+        try {
             String result = sessionService.makeTurn(sessionId, userId, coords.getAxis(), coords.getOrdinate());
             return new ResponseEntity<>(result, HttpStatus.OK);
-        //} catch (Exception e) {
-          //  return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        //}
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
@@ -94,14 +94,18 @@ public class SessionController {
     public ResponseEntity<?> createOrJoinSession(
             @RequestBody final UserDTO userDTO
     ) {
-        Session session = sessionService.getActualSession(userDTO.getId());
-        ResponseEntity<SessionPendingDTO> response;
-        if (session.getGameState().equals(SessionStatusEnum.STATUS_PENDING.toString())) {
-            response = new ResponseEntity<>(Session.toPendingDTO(session), HttpStatus.CREATED);
-        } else {
-            response = new ResponseEntity<>(Session.toPendingDTO(session), HttpStatus.OK);
+        try {
+            Session session = sessionService.getActualSession(userDTO.getId());
+            ResponseEntity<SessionPendingDTO> response;
+            if (session.getGameState().equals(SessionStatusEnum.STATUS_PENDING.toString())) {
+                response = new ResponseEntity<>(Session.toPendingDTO(session), HttpStatus.CREATED);
+            } else {
+                response = new ResponseEntity<>(Session.toPendingDTO(session), HttpStatus.OK);
+            }
+            return response;
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
-        return response;
     }
 
     /**

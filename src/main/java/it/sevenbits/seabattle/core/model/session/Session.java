@@ -71,9 +71,11 @@ public class Session {
         sessionPendingDTO.setId(session.getId());
         sessionPendingDTO.setCreateDate(session.getCreateDate());
         sessionPendingDTO.setGameState(session.getGameState());
-        sessionPendingDTO.setUserFirst(session.getUserFirst());
+        sessionPendingDTO.setUserFirst(session.getUserFirst().getId());
         sessionPendingDTO.setArrangementStartDate(session.getArrangementStartDate());
-        sessionPendingDTO.setUserSecond(session.getUserSecond());
+        if (session.getUserSecond() != null) {
+            sessionPendingDTO.setUserSecond(session.getUserSecond().getId());
+        }
         return sessionPendingDTO;
     }
 }

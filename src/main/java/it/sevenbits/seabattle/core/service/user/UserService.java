@@ -2,6 +2,8 @@ package it.sevenbits.seabattle.core.service.user;
 
 import it.sevenbits.seabattle.core.model.user.User;
 import it.sevenbits.seabattle.core.repository.user.UserRepository;
+import it.sevenbits.seabattle.core.validator.session.BadValidException;
+import it.sevenbits.seabattle.core.validator.session.StringValidator;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
 import it.sevenbits.seabattle.web.model.UserForm;
 import org.springframework.stereotype.Service;
@@ -16,14 +18,16 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final StringValidator stringValidator;
 
     /**
      * constructor
      *
      * @param userRepository - user repos
      */
-    public UserService(final UserRepository userRepository) {
+    public UserService(final UserRepository userRepository, final StringValidator stringValidator) {
         this.userRepository = userRepository;
+        this.stringValidator = stringValidator;
     }
 
     /**
@@ -80,6 +84,9 @@ public class UserService {
      * @return userDTO
      */
     public UserDTO save(final UserForm userForm) {
+        if (!stringValidator.validate(userForm.getLogin()) || !stringValidator.validate(userForm.getPassword())) {
+            throw new BadValidException("Bad login or password");
+        }
         User userToSave = new User();
         userToSave.setLogin(userForm.getLogin());
         userToSave.setPassword(userForm.getPassword());
@@ -93,6 +100,9 @@ public class UserService {
     }
 
     public UserDTO loginUser(final UserForm userForm) {
+        if (!stringValidator.validate(userForm.getLogin()) || !stringValidator.validate(userForm.getPassword())) {
+            throw new BadValidException("Bad login or password");
+        }
         User user = userRepository.findUserByLogin(userForm.getLogin());
         if (user == null) {
             return null;
