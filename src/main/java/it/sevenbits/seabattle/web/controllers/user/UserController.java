@@ -70,8 +70,8 @@ public class UserController {
     public ResponseEntity<?> addUser(
             @RequestBody final UserForm userForm
     ) {
+        System.out.println("AS");
         UserDTO user = userService.save(userForm);
-        System.out.println("TEST");
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } else {
