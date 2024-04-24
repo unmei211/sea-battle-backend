@@ -5,10 +5,7 @@ import it.sevenbits.seabattle.core.model.session.Session;
 import it.sevenbits.seabattle.core.service.session.SessionService;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
 import it.sevenbits.seabattle.core.util.session.SessionStatusEnum;
-import it.sevenbits.seabattle.web.model.Coords;
-import it.sevenbits.seabattle.web.model.SessionModel;
-import it.sevenbits.seabattle.web.model.ShipArrangement;
-import it.sevenbits.seabattle.web.model.StatePullingResponse;
+import it.sevenbits.seabattle.web.model.*;
 import it.sevenbits.seabattle.web.model.session.SessionPendingDTO;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
 import lombok.AllArgsConstructor;
@@ -50,7 +47,7 @@ public class SessionController {
 
     /**
      * calls when player make a turn
-     *  
+     *
      * @param sessionId - session id
      * @param userId    - player id
      * @param coords    - coordinates where player shoot
@@ -72,20 +69,6 @@ public class SessionController {
     }
 
     /**
-     * update session
-     *
-     * @param id      - session id
-     * @param session - session
-     */
-    @PatchMapping("/{id}")
-    public void updateSession(
-            @PathVariable final Long id,
-            @ModelAttribute(name = "user") final Session session
-    ) {
-        sessionService.update(id, session);
-    }
-
-    /**
      * save session in database
      *
      * @param userDTO - DTO object of user
@@ -104,7 +87,7 @@ public class SessionController {
             }
             return response;
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(new ExceptionModel(e.getMessage()), HttpStatus.CONFLICT);
         }
     }
 
@@ -120,22 +103,6 @@ public class SessionController {
         sessionService.remove(id);
     }
 
-    /**
-     * takes the cells of a specific user
-     *
-     * @param sessionId - session id
-     * @param userId    - user id
-     * @return - list of cells
-     */
-    @GetMapping("/{sessionId}/users/{userId}")
-    public List<Cell> getUserCells(
-            @PathVariable final Long sessionId,
-            @PathVariable final Long userId
-    ) {
-        return sessionService.getUserCells(sessionId, userId);
-    }
-
-    // TODO: Будет сокет
 
     /**
      * to do method calls

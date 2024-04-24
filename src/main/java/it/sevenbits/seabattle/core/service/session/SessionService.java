@@ -101,10 +101,6 @@ public class SessionService {
         return sessionRepository.save(session);
     }
 
-    public List<Session> getAll() {
-        return null;
-    }
-
     /**
      * remove session by id
      *
@@ -112,45 +108,6 @@ public class SessionService {
      */
     public void remove(final Long id) {
         sessionRepository.deleteById(id);
-    }
-
-    /**
-     * update session
-     *
-     * @param id                - session id
-     * @param objectToBeUpdated - new session
-     */
-
-    public void update(final Long id, final Session objectToBeUpdated) {
-
-    }
-
-    /**
-     * save session in database
-     *
-     * @param sessionModel - session model
-     */
-    public void save(final SessionModel sessionModel) {
-        Session session = new Session();
-        session.setUserFirst(userService.getById(sessionModel.getUserFirst()).get());
-        session.setUserSecond(userService.getById(sessionModel.getUserSecond()).get());
-        Date date = new Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        session.setCreateDate(timestamp);
-//        session.setGameState();
-        sessionRepository.save(session);
-    }
-
-    /**
-     * get cells specific user
-     *
-     * @param playerId  - player id
-     * @param sessionId - session id
-     * @return list of cells
-     */
-    public List<Cell> getUserCells(final Long playerId, final Long sessionId) {
-//      return cellRepository.findAllByUserIdAndSessionId(playerId, sessionId);
-        return null;
     }
 
 
@@ -316,6 +273,9 @@ public class SessionService {
      */
     public boolean putShips(final Session session, final Long userId, final ShipArrangement shipArrangement) {
         Optional<User> user = userService.getById(userId);
+        if (!cellRepository.findCellBySessionIdAndUserId(session.getId(), userId).isEmpty()) {
+            return false;
+        }
         if (arrangementValidator.validate(shipArrangement)) {
             for (List<Coords> coordsList : arrangementValidator.makeShips(shipArrangement)) {
                 String currentShipUUID = randomUUID().toString();

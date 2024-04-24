@@ -98,7 +98,11 @@ public class Session {
         sessionDataResponse.setArrangementStartDate(this.getArrangementStartDate());
         sessionDataResponse.setStartGameDate(this.getStartGameDate());
         sessionDataResponse.setPlayerTurnStartDate(this.getPlayerTurnStartDate());
-        sessionDataResponse.setPlayerTurnCoords(new Coords(this.getTargetCellAxis(), this.getTargetCellOrdinate()));
+        if (this.targetCellAxis == null) {
+            sessionDataResponse.setPlayerTurnCoords(null);
+        } else {
+            sessionDataResponse.setPlayerTurnCoords(new Coords(this.getTargetCellAxis(), this.getTargetCellOrdinate()));
+        }
         return sessionDataResponse;
     }
 }
