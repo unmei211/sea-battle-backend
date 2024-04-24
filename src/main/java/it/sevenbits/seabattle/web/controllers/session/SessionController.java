@@ -5,7 +5,9 @@ import it.sevenbits.seabattle.core.model.session.Session;
 import it.sevenbits.seabattle.core.service.session.SessionService;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
 import it.sevenbits.seabattle.core.util.session.SessionStatusEnum;
+import it.sevenbits.seabattle.core.validator.session.BadValidException;
 import it.sevenbits.seabattle.web.model.*;
+import it.sevenbits.seabattle.web.model.session.EndModel;
 import it.sevenbits.seabattle.web.model.session.SessionPendingDTO;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
 import lombok.AllArgsConstructor;
@@ -55,17 +57,18 @@ public class SessionController {
      */
 
     @PostMapping("/{sessionId}/turn/{userId}")
-    public ResponseEntity<String> makeTurn(
+    public ResponseEntity<?> makeTurn(
             @PathVariable final Long sessionId,
             @PathVariable final Long userId,
             @RequestBody final Coords coords
     ) {
         try {
             String result = sessionService.makeTurn(sessionId, userId, coords.getAxis(), coords.getOrdinate());
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new MakeTurnResponse(result), HttpStatus.OK);
+        } catch (BadValidException e) {
+            return new ResponseEntity<>(new ExceptionModel(e.getMessage()), HttpStatus.CONFLICT);
         }
+
     }
 
     /**
@@ -123,12 +126,12 @@ public class SessionController {
      * @return - winner id
      */
     @GetMapping("{sessionId}/end")
-    public ResponseEntity<Long> getWinnerId(
+    public ResponseEntity<?> getWinnerId(
             @PathVariable final Long sessionId
     ) {
         try {
             Long winnerId = sessionService.getWinnerId(sessionId);
-            return new ResponseEntity<>(winnerId, HttpStatus.OK);
+            return new ResponseEntity<>(new EndModel(winnerId), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

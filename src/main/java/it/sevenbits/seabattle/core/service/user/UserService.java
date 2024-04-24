@@ -15,7 +15,6 @@ import java.util.Optional;
 /**
  * user service
  */
-@Service
 public class UserService {
     private final UserRepository userRepository;
     private final StringValidator stringValidator;
@@ -113,5 +112,13 @@ public class UserService {
                 return null;
             }
         }
+    }
+
+    public void changeRating(final Long playerId, final Integer rating) {
+        User user = userRepository.findById(playerId).get();
+        if (user.getRating() - rating <= 0) {
+            user.setRating(user.getRating() + rating);
+        }
+        userRepository.save(user);
     }
 }
