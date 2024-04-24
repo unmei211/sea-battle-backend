@@ -8,7 +8,7 @@ public class ArrangementTask extends SeaTask {
     private final SessionService sessionService;
     private final Notifier notifier;
 
-    private static final Long ARRANGEMENT_TASK_DELAY = 30000L;
+    private static final Long ARRANGEMENT_TASK_DELAY = 300000000L;
 
     public ArrangementTask(TasksHandler tasks, Long sessionId, SessionService sessionService,
                            Notifier notifier) {

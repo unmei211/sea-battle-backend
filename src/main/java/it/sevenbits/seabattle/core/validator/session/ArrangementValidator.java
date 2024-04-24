@@ -87,6 +87,9 @@ public class ArrangementValidator {
         shipMap.put(shipCount.getFOUR_DECK(), 0);
         ArrayList<Integer> distanceArray = new ArrayList<>();
         for (List<Coords> shipCoords : shipArrangement.getShipCoords()) {
+            if (!validateCoordinate(shipCoords)) {
+                return false;
+            }
             distanceArray.add((int) Math.sqrt(
                     Math.pow(
                             shipCoords.get(0).getAxis() - shipCoords.get(1).getAxis(), 2
@@ -122,7 +125,14 @@ public class ArrangementValidator {
     public boolean validate(final ShipArrangement shipArrangement) {
         return validateArrangementPosition(shipArrangement) && validateArrangementCount(shipArrangement);
     }
+
+    private boolean validateCoordinate(final List<Coords> coords) {
+        if (coords.get(0).getAxis() < 1 || coords.get(0).getAxis() > 10 || coords.get(0).getOrdinate() < 1 || coords.get(0).getOrdinate() > 10) {
+            return false;
+        } else if (coords.get(1).getAxis() < 1 || coords.get(1).getAxis() > 10 || coords.get(1).getOrdinate() < 1 || coords.get(1).getOrdinate() > 10) {
+            return false;
+        }
+        return true;
+    }
 }
-
-
 
