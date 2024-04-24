@@ -42,7 +42,7 @@ public class SessionController {
     public ResponseEntity<?> getSessionData(@PathVariable final Long id) {
         try {
             Session session = sessionService.getById(id).get();
-            return new ResponseEntity<>(session, HttpStatus.OK);
+            return new ResponseEntity<>(session.toDataResponse(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -50,7 +50,7 @@ public class SessionController {
 
     /**
      * calls when player make a turn
-     *
+     *  
      * @param sessionId - session id
      * @param userId    - player id
      * @param coords    - coordinates where player shoot

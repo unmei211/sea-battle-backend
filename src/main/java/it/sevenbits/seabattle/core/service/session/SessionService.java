@@ -193,7 +193,8 @@ public class SessionService {
         cell.get().setShotDown(true);
         cellRepository.save(cell.get());
         Optional<Session> session = sessionRepository.findById(sessionId);
-        session.get().setTargetCellId(cell.get().getId());
+        session.get().setTargetCellAxis(cell.get().getAxis());
+        session.get().setTargetCellOrdinate(cell.get().getOrdinate());
 
         if (response.isEmpty()) {
             response = "catch";

@@ -14,25 +14,30 @@ alter table public.users
 
 create table public.session
 (
-    id             bigserial
+    id                     bigserial
         primary key,
-    date           timestamp(6),
-    game_state     varchar(255),
-    turn_player_id bigint
+    date                   timestamp(6),
+    game_state             varchar(255),
+    turn_player_id         bigint
         constraint fkxl74vtpsiyi3jq8tpdque7ww
             references public.users,
-    user_first     bigint
+    user_first             bigint
         constraint fkg5ugvq5rino88ot8pcfl86u1k
             references public.users,
-    user_second    bigint
+    user_second            bigint
         constraint fkiey40nmbi2qkn7t5p2js8qh9e
             references public.users,
-    user_id        bigint
+    user_id                bigint
         constraint fkj3ffkfbfbdoh9uon462ow7lhl
             references public.users,
-    winner_id      bigint
+    winner_id              bigint
         constraint fklcstvnqmo0ijjqdrhqh01pxwo
-            references public.users
+            references public.users,
+    arrangement_start_date timestamp(6),
+    create_date            timestamp(6),
+    player_turn_start_date timestamp(6),
+    start_game_date        timestamp(6),
+    target_cell_id         bigint
 );
 
 alter table public.session
@@ -64,10 +69,13 @@ create table public.cell
     ordinate      integer,
     session_id    bigint
         constraint fkq1r869px7k768anrjj48jr2iu
-            references public.session,
+            references public.session
+            on delete cascade,
     user_id       bigint
         constraint fka6kai3ioq9b2kwvics3fiowpd
             references public.users
+            on delete cascade,
+    ship_id       varchar
 );
 
 alter table public.cell
