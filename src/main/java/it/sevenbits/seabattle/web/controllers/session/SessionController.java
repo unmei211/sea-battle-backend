@@ -3,6 +3,7 @@ package it.sevenbits.seabattle.web.controllers.session;
 import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.model.session.Session;
 import it.sevenbits.seabattle.core.service.session.SessionService;
+import it.sevenbits.seabattle.core.util.exceptions.NotFoundException;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
 import it.sevenbits.seabattle.core.util.session.SessionStatusEnum;
 import it.sevenbits.seabattle.core.validator.session.BadValidException;
@@ -11,6 +12,7 @@ import it.sevenbits.seabattle.web.model.session.EndModel;
 import it.sevenbits.seabattle.web.model.session.SessionPendingDTO;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/session")
 @AllArgsConstructor
+@Slf4j
 public class SessionController {
 
     private SessionService sessionService;
@@ -39,12 +42,13 @@ public class SessionController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getSessionData(@PathVariable final Long id) {
-        try {
-            Session session = sessionService.getById(id).get();
-            return new ResponseEntity<>(session.toDataResponse(), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Session session = sessionService.getById(id).orElseThrow(
+                () -> {
+                    log.info("Not found session by id {}", id);
+                    return new NotFoundException("Session not found");
+                }
+        );
+        return new ResponseEntity<>(session.toDataResponse(), HttpStatus.OK);
     }
 
     /**

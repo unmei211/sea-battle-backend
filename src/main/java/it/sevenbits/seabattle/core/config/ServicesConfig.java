@@ -2,7 +2,10 @@ package it.sevenbits.seabattle.core.config;
 
 import it.sevenbits.seabattle.core.repository.cell.CellRepository;
 import it.sevenbits.seabattle.core.repository.session.SessionRepository;
+import it.sevenbits.seabattle.core.repository.token.TokenRepository;
 import it.sevenbits.seabattle.core.repository.user.UserRepository;
+import it.sevenbits.seabattle.core.security.auth.JwtTokenService;
+import it.sevenbits.seabattle.core.security.encrypt.PasswordEncoder;
 import it.sevenbits.seabattle.core.service.processing.GameProcessService;
 import it.sevenbits.seabattle.core.service.session.SessionService;
 import it.sevenbits.seabattle.core.service.user.UserService;
@@ -53,8 +56,15 @@ public class ServicesConfig extends CorsConfiguration {
     }
 
     @Bean
-    UserService userService(UserRepository userRepository, StringValidator stringValidator, TaskFactory taskFactory) {
-        UserService userService = new UserService(userRepository, stringValidator);
+    UserService userService(
+            UserRepository userRepository,
+            StringValidator stringValidator,
+            TaskFactory taskFactory,
+            PasswordEncoder passwordEncoder,
+            TokenRepository tokenRepository,
+            JwtTokenService jwtTokenService
+    ) {
+        UserService userService = new UserService(userRepository, stringValidator, passwordEncoder, tokenRepository, jwtTokenService);
         taskFactory.setUserService(userService);
         return userService;
     }

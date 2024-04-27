@@ -2,6 +2,7 @@ package it.sevenbits.seabattle.core.model.user;
 
 import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.model.statistic.Statistic;
+import it.sevenbits.seabattle.core.model.token.RefreshToken;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,6 +51,9 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private Statistic statistic;
+
+    @OneToOne(mappedBy = "user")
+    private RefreshToken refreshToken;
 
     @Override
     public String toString() {

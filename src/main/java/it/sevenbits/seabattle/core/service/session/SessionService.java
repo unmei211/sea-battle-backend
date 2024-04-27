@@ -194,7 +194,7 @@ public class SessionService {
             }
             gameTimer.removeTask(sessionId);
             gameTimer.addTask(taskFactory.createTask(sessionId, GameProcessTask.class), sessionId);
-            // TODO: send notification
+            notifier.sendUserTurn(sessionId);
         } else {
             session.get().setWinner(userService.getById(myUserId).get());
             if (session.get().getUserFirst() == session.get().getWinner()) {
