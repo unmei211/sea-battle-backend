@@ -7,6 +7,7 @@ import it.sevenbits.seabattle.core.security.auth.UserCredentials;
 import it.sevenbits.seabattle.core.service.user.UserService;
 import it.sevenbits.seabattle.core.util.exceptions.NotFoundException;
 import it.sevenbits.seabattle.web.model.token.ComplexToken;
+import it.sevenbits.seabattle.web.model.DeleteUserRequest;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
 import it.sevenbits.seabattle.web.model.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,5 +96,11 @@ public class UserController {
                 () -> new NotFoundException("User not found")
         );
         return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
+    }
+
+    @PostMapping("/delete")
+    public void deleteUser(
+            @RequestBody final DeleteUserRequest deleteUserRequest) {
+        userService.deleteUser(deleteUserRequest.getUserId());
     }
 }

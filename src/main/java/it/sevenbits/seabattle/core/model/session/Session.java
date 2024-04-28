@@ -52,7 +52,7 @@ public class Session {
     @JoinColumn(name = "user_second")
     private User userSecond;
 
-    @OneToMany(mappedBy = "session")
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
     private List<Cell> cells;
 
     @Column(name = "create_date")
@@ -72,6 +72,8 @@ public class Session {
     @Column(name = "target_cell_ordinatine")
     private Integer targetCellOrdinate;
 
+    @Column(name = "target_player")
+    private Long targetPlayer;
 
     public static SessionPendingDTO toPendingDTO(final Session session) {
         SessionPendingDTO sessionPendingDTO = new SessionPendingDTO();
@@ -90,6 +92,7 @@ public class Session {
         SessionDataResponse sessionDataResponse = new SessionDataResponse();
         sessionDataResponse.setId(this.getId());
         sessionDataResponse.setCreateData(this.getCreateDate());
+        sessionDataResponse.setTargetPlayer(this.getTargetPlayer());
         sessionDataResponse.setWinnerId(this.getWinner() != null ? this.getWinner().getId() : null);
         sessionDataResponse.setTurnPlayerId(this.getTurnUser() != null ? this.getTurnUser().getId() : null);
         sessionDataResponse.setGameState(this.getGameState());

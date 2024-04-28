@@ -25,4 +25,5 @@ public class SessionDataResponse {
     private Timestamp startGameDate;
     private Timestamp playerTurnStartDate;
     private Coords playerTurnCoords;
+    private Long targetPlayer;
 }

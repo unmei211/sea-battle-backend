@@ -170,6 +170,7 @@ public class SessionService {
 
         cell.get().setShotDown(true);
         cellRepository.save(cell.get());
+        session.get().setTargetPlayer(userId);
         session.get().setTargetCellAxis(cell.get().getAxis());
         session.get().setTargetCellOrdinate(cell.get().getOrdinate());
 

@@ -4,15 +4,7 @@ import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.model.statistic.Statistic;
 import it.sevenbits.seabattle.core.model.token.RefreshToken;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,13 +35,13 @@ public class User {
     @Column(unique = true)
     private String login;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Cell> cells;
 
 //    @OneToMany(mappedBy = "session", fetch = FetchType.LAZY)
 //    private List<Session> sessions; ;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
     private Statistic statistic;
 
     @OneToOne(mappedBy = "user")
