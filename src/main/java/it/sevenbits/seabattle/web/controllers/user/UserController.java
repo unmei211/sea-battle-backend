@@ -2,6 +2,7 @@ package it.sevenbits.seabattle.web.controllers.user;
 
 import it.sevenbits.seabattle.core.model.user.User;
 import it.sevenbits.seabattle.core.service.user.UserService;
+import it.sevenbits.seabattle.web.model.DeleteUserRequest;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
 import it.sevenbits.seabattle.web.model.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,5 +94,11 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
+    }
+
+    @PostMapping("/delete")
+    public void deleteUser(
+            @RequestBody final DeleteUserRequest deleteUserRequest) {
+        userService.deleteUser(deleteUserRequest.getUserId());
     }
 }

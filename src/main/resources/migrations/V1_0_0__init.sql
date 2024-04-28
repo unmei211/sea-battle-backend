@@ -23,7 +23,7 @@ create table public.session
             references public.users,
     user_first             bigint
         constraint fkg5ugvq5rino88ot8pcfl86u1k
-            references public.users,
+            references public.users ,
     user_second            bigint
         constraint fkiey40nmbi2qkn7t5p2js8qh9e
             references public.users,
