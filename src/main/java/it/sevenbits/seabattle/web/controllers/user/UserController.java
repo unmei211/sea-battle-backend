@@ -1,7 +1,12 @@
 package it.sevenbits.seabattle.web.controllers.user;
 
 import it.sevenbits.seabattle.core.model.user.User;
+import it.sevenbits.seabattle.core.security.auth.AuthRequired;
+import it.sevenbits.seabattle.core.security.auth.IUserCredentials;
+import it.sevenbits.seabattle.core.security.auth.UserCredentials;
 import it.sevenbits.seabattle.core.service.user.UserService;
+import it.sevenbits.seabattle.core.util.exceptions.NotFoundException;
+import it.sevenbits.seabattle.web.model.token.ComplexToken;
 import it.sevenbits.seabattle.web.model.DeleteUserRequest;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
 import it.sevenbits.seabattle.web.model.UserForm;
@@ -68,32 +73,29 @@ public class UserController {
      * @return return user without password
      */
     @PostMapping
-    public ResponseEntity<?> addUser(
+    public ResponseEntity<?> registerUser(
             @RequestBody final UserForm userForm
     ) {
-        System.out.println("AS");
-        UserDTO user = userService.save(userForm);
-        if (user != null) {
-            return new ResponseEntity<>(user, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
+        userService.save(userForm);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(
+    public ResponseEntity<ComplexToken> loginUser(
             @RequestBody final UserForm userForm
     ) {
-        try {
-            UserDTO user = userService.loginUser(userForm);
-            if (user == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            } else {
-                return new ResponseEntity<>(user, HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
+        return new ResponseEntity<>(userService.loginUser(userForm), HttpStatus.OK);
+    }
+
+    @AuthRequired
+    @GetMapping("/whoami")
+    public ResponseEntity<UserDTO> whoami(
+            final IUserCredentials userCredentials
+    ) {
+        User user = userService.getById(Long.valueOf(userCredentials.getUserId())).orElseThrow(
+                () -> new NotFoundException("User not found")
+        );
+        return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
     }
 
     @PostMapping("/delete")

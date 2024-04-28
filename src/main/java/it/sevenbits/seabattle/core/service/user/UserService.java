@@ -1,9 +1,16 @@
 package it.sevenbits.seabattle.core.service.user;
 
+import it.sevenbits.seabattle.core.model.token.RefreshToken;
 import it.sevenbits.seabattle.core.model.user.User;
+import it.sevenbits.seabattle.core.repository.token.TokenRepository;
 import it.sevenbits.seabattle.core.repository.user.UserRepository;
+import it.sevenbits.seabattle.core.security.auth.JwtTokenService;
+import it.sevenbits.seabattle.core.security.encrypt.PasswordEncoder;
+import it.sevenbits.seabattle.core.util.exceptions.ConflictException;
+import it.sevenbits.seabattle.core.util.exceptions.UnauthorizedException;
 import it.sevenbits.seabattle.core.validator.session.BadValidException;
 import it.sevenbits.seabattle.core.validator.session.StringValidator;
+import it.sevenbits.seabattle.web.model.token.ComplexToken;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
 import it.sevenbits.seabattle.web.model.UserForm;
 import org.springframework.stereotype.Service;
@@ -18,15 +25,24 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final StringValidator stringValidator;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenRepository tokenRepository;
+    private final JwtTokenService tokenService;
 
     /**
      * constructor
      *
      * @param userRepository - user repos
      */
-    public UserService(final UserRepository userRepository, final StringValidator stringValidator) {
+    public UserService(final UserRepository userRepository, final StringValidator stringValidator,
+                       final PasswordEncoder passwordEncoder,
+                       final TokenRepository tokenRepository,
+                       final JwtTokenService tokenService) {
+        this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.stringValidator = stringValidator;
+        this.tokenRepository = tokenRepository;
+        this.tokenService = tokenService;
     }
 
     /**
@@ -82,36 +98,40 @@ public class UserService {
      * @param userForm - user form (login and password)
      * @return userDTO
      */
-    public UserDTO save(final UserForm userForm) {
+    public void save(final UserForm userForm) {
         if (!stringValidator.validate(userForm.getLogin()) || !stringValidator.validate(userForm.getPassword())) {
             throw new BadValidException("Bad login or password");
         }
+
+        if (userRepository.findByLogin(userForm.getLogin()).isPresent()) {
+            throw new ConflictException("user is exist");
+        }
+
         User userToSave = new User();
         userToSave.setLogin(userForm.getLogin());
-        userToSave.setPassword(userForm.getPassword());
+        userToSave.setPassword(passwordEncoder.encrypt(userForm.getPassword()));
         userToSave.setRating(0);
-        User user = userRepository.findUserByLogin(userForm.getLogin());
-        if (user != null) {
-            return null;
-        }
+
         userRepository.save(userToSave);
-        return new UserDTO(userToSave.getId(), userToSave.getLogin(), userToSave.getRating());
     }
 
-    public UserDTO loginUser(final UserForm userForm) {
+    public ComplexToken loginUser(final UserForm userForm) {
         if (!stringValidator.validate(userForm.getLogin()) || !stringValidator.validate(userForm.getPassword())) {
             throw new BadValidException("Bad login or password");
         }
-        User user = userRepository.findUserByLogin(userForm.getLogin());
-        if (user == null) {
-            return null;
-        } else {
-            if (Objects.equals(user.getPassword(), userForm.getPassword())) {
-                return user.toDTO();
-            } else {
-                return null;
-            }
+
+        User user = userRepository.findByLogin(userForm.getLogin()).orElseThrow(
+                () -> new UnauthorizedException("user not found")
+        );
+
+        if (!passwordEncoder.matches(userForm.getPassword(), user.getPassword())) {
+            throw new UnauthorizedException("no matches pass");
         }
+
+        String refreshToken = tokenService.createOrUpdateRefreshToken(user);
+        String accessToken = tokenService.createAccessToken(user);
+
+        return new ComplexToken(accessToken, refreshToken);
     }
 
     public void changeRating(final Long playerId, final Integer rating) {
