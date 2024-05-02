@@ -92,7 +92,7 @@ public class UserController {
     public ResponseEntity<UserDTO> whoami(
             final IUserCredentials userCredentials
     ) {
-        User user = userService.getById(Long.valueOf(userCredentials.getUserId())).orElseThrow(
+        User user = userService.getById(userCredentials.getUserId()).orElseThrow(
                 () -> new NotFoundException("User not found")
         );
         return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);

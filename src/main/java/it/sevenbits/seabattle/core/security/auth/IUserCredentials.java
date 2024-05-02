@@ -8,5 +8,5 @@ public interface IUserCredentials {
      * Get userId
      * @return userId
      */
-    String getUserId();
+    Long getUserId();
 }

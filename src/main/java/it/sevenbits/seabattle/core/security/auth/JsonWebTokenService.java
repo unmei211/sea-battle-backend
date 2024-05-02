@@ -45,13 +45,13 @@ public class JsonWebTokenService implements JwtTokenService {
     }
 
     @Override
-    public String createRefreshToken(final String playerId) {
+    public String createRefreshToken(final Long playerId) {
         Instant now = Instant.now();
 
         Claims claims = Jwts.claims()
                 .setIssuer(settings.getTokenIssuer())
                 .setIssuedAt(Date.from(now))
-                .setSubject(playerId)
+                .setSubject(playerId.toString())
                 .setExpiration(Date.from(
                         now.plus(settings.getRefreshTokenExpirationIn())
                 ));
@@ -82,8 +82,7 @@ public class JsonWebTokenService implements JwtTokenService {
             throw new TokenExpiredException("tokes is expired");
         }
         String subject = claims.getBody().getSubject();
-
-        return new UserCredentials(subject);
+        return new UserCredentials(Long.valueOf(subject));
     }
 
     @Override
@@ -99,7 +98,7 @@ public class JsonWebTokenService implements JwtTokenService {
 
     @Override
     public String createOrUpdateRefreshToken(final User user) {
-        String refreshToken = createRefreshToken(String.valueOf(user.getId()));
+        String refreshToken = createRefreshToken(user.getId());
 
         Optional<RefreshToken> oldRefreshToken = tokenRepository.findByUserId(user.getId());
         if (oldRefreshToken.isEmpty()) {
@@ -131,7 +130,7 @@ public class JsonWebTokenService implements JwtTokenService {
                 () -> new NotFoundException("user/player not found")
         );
 
-        String refreshToken = createRefreshToken(String.valueOf(userId));
+        String refreshToken = createRefreshToken(userId);
         tokenRepository.updateRefreshToken(refreshToken, oldRefreshToken);
 
         String accessToken = createAccessToken(user);

@@ -2,6 +2,9 @@ package it.sevenbits.seabattle.web.controllers.session;
 
 import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.model.session.Session;
+import it.sevenbits.seabattle.core.model.user.User;
+import it.sevenbits.seabattle.core.security.auth.IUserCredentials;
+import it.sevenbits.seabattle.core.security.auth.UserCredentials;
 import it.sevenbits.seabattle.core.service.session.SessionService;
 import it.sevenbits.seabattle.core.util.exceptions.NotFoundException;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
@@ -54,19 +57,20 @@ public class SessionController {
     /**
      * calls when player make a turn
      *
-     * @param sessionId - session id
-     * @param userId    - player id
-     * @param coords    - coordinates where player shoot
+     * @param sessionId       - session id
+     * @param userCredentials - player id
+     * @param coords          - coordinates where player shoot
      * @return - result (shoot or miss)
      */
 
-    @PostMapping("/{sessionId}/turn/{userId}")
+    @PostMapping("/{sessionId}/turn")
     public ResponseEntity<?> makeTurn(
             @PathVariable final Long sessionId,
-            @PathVariable final Long userId,
+            final IUserCredentials userCredentials,
             @RequestBody final Coords coords
     ) {
         try {
+            Long userId = userCredentials.getUserId();
             String result = sessionService.makeTurn(sessionId, userId, coords.getAxis(), coords.getOrdinate());
             return new ResponseEntity<>(new MakeTurnResponse(result), HttpStatus.OK);
         } catch (BadValidException e) {
@@ -78,14 +82,14 @@ public class SessionController {
     /**
      * save session in database
      *
-     * @param userDTO - DTO object of user
+     * @param userCredentials - DTO object of user
      */
     @PostMapping
     public ResponseEntity<?> createOrJoinSession(
-            @RequestBody final UserDTO userDTO
+            final IUserCredentials userCredentials
     ) {
         try {
-            Session session = sessionService.getActualSession(userDTO.getId());
+            Session session = sessionService.getActualSession(userCredentials.getUserId());
             ResponseEntity<SessionPendingDTO> response;
             if (session.getGameState().equals(SessionStatusEnum.STATUS_PENDING.toString())) {
                 response = new ResponseEntity<>(Session.toPendingDTO(session), HttpStatus.CREATED);
@@ -145,18 +149,18 @@ public class SessionController {
      * get arrangement specific user
      *
      * @param sessionId       - session id
-     * @param userId          - user id
+     * @param userCredentials - user id
      * @param shipArrangement - list of ships
      * @return - http status
      */
-    @PostMapping("{sessionId}/arrangement/{userId}")
+    @PostMapping("{sessionId}/arrangement")
     public ResponseEntity<?> userShipArrangement(
             @PathVariable final Long sessionId,
-            @PathVariable final Long userId,
-            @RequestBody final ShipArrangement shipArrangement
+            @RequestBody final ShipArrangement shipArrangement,
+            final IUserCredentials userCredentials
     ) {
         try {
-            if (sessionService.tryArrangement(sessionId, userId, shipArrangement)) {
+            if (sessionService.tryArrangement(sessionId, userCredentials.getUserId(), shipArrangement)) {
                 return new ResponseEntity<>(HttpStatus.ACCEPTED);
             } else {
                 return new ResponseEntity<>(HttpStatus.CONFLICT);

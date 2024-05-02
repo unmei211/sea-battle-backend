@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class UserCredentials implements IUserCredentials {
     @JsonProperty("userId")
-    private final String userId;
+    private final Long userId;
 
     /**
      * UserCredentials
@@ -22,13 +22,13 @@ public class UserCredentials implements IUserCredentials {
      */
     @JsonCreator
     public UserCredentials(
-            final String userId
+            final Long userId
     ) {
         this.userId = userId;
     }
 
     @Override
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 

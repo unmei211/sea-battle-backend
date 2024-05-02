@@ -21,7 +21,7 @@ public interface JwtTokenService {
      * @param userId id
      * @return token
      */
-    String createRefreshToken(String userId);
+    String createRefreshToken(Long userId);
 
     /**
      * parse refresh token
