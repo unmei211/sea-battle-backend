@@ -1,0 +1,26 @@
+version: '3.3'
+services:
+#  backend:
+#    image: client:0.0.1
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - 8080:8080
+#    depends_on:
+#      - postgres
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sea_battle
+#      - SPRING_FLYWAY_URL=jdbc:postgresql://postgres:5432/sea_battle
+  postgres:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=cisco
+      - POSTGRES_DB=sea_battle
+    volumes:
+      - sea:/var/lib/postgresql/data
+volumes:
+  sea:

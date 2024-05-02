@@ -11,6 +11,10 @@ spring:
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: update
-server:
-  port: 8080
+      ddl-auto: create-drop
+
+jwt:
+  issuer: 'starovoytov@gmail.com'
+  signingKey: 'talspoc120nxjsapqke1d77'
+  aTokenDuration: 30
+  rTokenDuration: 168

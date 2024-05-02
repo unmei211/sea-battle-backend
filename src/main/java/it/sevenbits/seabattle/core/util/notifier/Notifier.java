@@ -72,6 +72,13 @@ public class Notifier {
         );
     }
 
+    public void sendUserTurn(Long sessionId) {
+        sendJsonMessage(
+                sessionId,
+                sessionStatusFactory.getSessionStatus(SessionStatusEnum.STATUS_GAME)
+        );
+    }
+
     public void sendSessionEnd(Long sessionId) {
         sendJsonMessage(
                 sessionId,

@@ -15,6 +15,8 @@ import it.sevenbits.seabattle.core.util.session.SessionStatusFactory;
 import it.sevenbits.seabattle.core.util.timer.GameTimer;
 import it.sevenbits.seabattle.core.util.timer.tasks.session.*;
 import it.sevenbits.seabattle.core.validator.session.ArrangementValidator;
+import it.sevenbits.seabattle.core.validator.session.BadValidException;
+import it.sevenbits.seabattle.core.validator.session.IdValidator;
 import it.sevenbits.seabattle.web.model.Coords;
 import it.sevenbits.seabattle.web.model.SessionModel;
 import it.sevenbits.seabattle.web.model.ShipArrangement;
@@ -39,7 +41,8 @@ public class SessionService {
     private final ArrangementValidator arrangementValidator;
     private final TaskFactory taskFactory;
     private final Notifier notifier;
-    private final GameProcessService gameProcessService;
+    private final IdValidator idValidator;
+    private final int RATING = 25;
 
     /**
      * get session by id
@@ -60,6 +63,9 @@ public class SessionService {
         } else {
             Optional<User> userSecond = userService.getById(userId);
             Session actualSession = sessions.get(0);
+            if (Objects.equals(actualSession.getUserFirst().getId(), userId)) {
+                throw new RuntimeException("You already in session");
+            }
             actualSession.setUserSecond(userSecond.get());
             actualSession.setGameState(SessionStatusEnum.STATUS_ARRANGEMENT.toString());
             Date date = new Date();
@@ -86,16 +92,18 @@ public class SessionService {
     private Session createSession(final Long userId) {
         Session session = new Session();
         Date currentDate = new Date();
+        Optional<User> user = userService.getById(userId);
+        if (sessionRepository.findSessionByUserFirstOrUserSecond(user.get(), user.get()) != null) {
+            if (!sessionRepository.findSessionByUserFirstOrUserSecond(user.get(), user.get()).getGameState().equals(SessionStatusEnum.STATUS_FINISH.toString())) {
+                throw new RuntimeException("User already have session");
+            }
+        }
         Timestamp timeStamp = new Timestamp(currentDate.getTime());
         Optional<User> firstUser = userService.getById(userId);
         session.setUserFirst(firstUser.get());
         session.setCreateDate(timeStamp);
         session.setGameState(SessionStatusEnum.STATUS_PENDING.toString());
         return sessionRepository.save(session);
-    }
-
-    public List<Session> getAll() {
-        return null;
     }
 
     /**
@@ -105,45 +113,6 @@ public class SessionService {
      */
     public void remove(final Long id) {
         sessionRepository.deleteById(id);
-    }
-
-    /**
-     * update session
-     *
-     * @param id                - session id
-     * @param objectToBeUpdated - new session
-     */
-
-    public void update(final Long id, final Session objectToBeUpdated) {
-
-    }
-
-    /**
-     * save session in database
-     *
-     * @param sessionModel - session model
-     */
-    public void save(final SessionModel sessionModel) {
-        Session session = new Session();
-        session.setUserFirst(userService.getById(sessionModel.getUserFirst()).get());
-        session.setUserSecond(userService.getById(sessionModel.getUserSecond()).get());
-        Date date = new Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        session.setCreateDate(timestamp);
-//        session.setGameState();
-        sessionRepository.save(session);
-    }
-
-    /**
-     * get cells specific user
-     *
-     * @param playerId  - player id
-     * @param sessionId - session id
-     * @return list of cells
-     */
-    public List<Cell> getUserCells(final Long playerId, final Long sessionId) {
-//      return cellRepository.findAllByUserIdAndSessionId(playerId, sessionId);
-        return null;
     }
 
 
@@ -158,6 +127,19 @@ public class SessionService {
      */
     public String makeTurn(final Long sessionId, final Long myUserId, final int xPos, final int yPos) {
         Long userId;
+        Optional<Session> session = sessionRepository.findById(sessionId);
+        if (session.isEmpty()) {
+            throw new NotFoundException("Session not found");
+        }
+        if (!idValidator.validate(sessionId)) {
+            throw new BadValidException("Bad session id");
+        }
+        if (!Objects.equals(session.get().getTurnUser().getId(), myUserId)) {
+            throw new BadValidException("Not your turn");
+        }
+        if (xPos < 1 || xPos > 10 || yPos < 1 || yPos > 10) {
+            throw new BadValidException("Wrong coordinates");
+        }
         if (Objects.equals(myUserId, sessionRepository.findById(sessionId).get().getUserFirst().getId())) {
             userId = sessionRepository.findById(sessionId).get().getUserSecond().getId();
         } else {
@@ -166,6 +148,9 @@ public class SessionService {
         Optional<Cell> cell = cellRepository.findCellBySessionIdAndUserIdAndAxisAndOrdinate(sessionId, userId, xPos, yPos);
         String response = "";
 
+        if (!session.get().getUserFirst().getId().equals(userId) && !session.get().getUserSecond().getId().equals(userId)) {
+            throw new BadValidException("Not your session");
+        }
         if (cell.isPresent() && cell.get().isShotDown()) {
             response = "Already attacked";
             return response;
@@ -185,8 +170,9 @@ public class SessionService {
 
         cell.get().setShotDown(true);
         cellRepository.save(cell.get());
-        Optional<Session> session = sessionRepository.findById(sessionId);
-        session.get().setTargetCellId(cell.get().getId());
+        session.get().setTargetPlayer(userId);
+        session.get().setTargetCellAxis(cell.get().getAxis());
+        session.get().setTargetCellOrdinate(cell.get().getOrdinate());
 
         if (response.isEmpty()) {
             response = "catch";
@@ -204,16 +190,27 @@ public class SessionService {
         User nextTurnedUser = getNextTurnedUser(session.get());
 
         if (cellRepository.existsCellByUserIdAndSessionIdAndIsShotDownFalse(nextTurnedUser.getId(), sessionId)) {
-            session.get().setTurnUser(nextTurnedUser);
+            if (!response.equals("killed") && !response.equals("catch")) {
+                session.get().setTurnUser(nextTurnedUser);
+            }
             gameTimer.removeTask(sessionId);
             gameTimer.addTask(taskFactory.createTask(sessionId, GameProcessTask.class), sessionId);
+            notifier.sendUserTurn(sessionId);
         } else {
-            session.get().setWinner(userService.getById(userId).get());
+            session.get().setWinner(userService.getById(myUserId).get());
+            if (session.get().getUserFirst() == session.get().getWinner()) {
+                userService.changeRating(session.get().getUserFirst().getId(), RATING);
+                userService.changeRating(session.get().getUserSecond().getId(), -RATING);
+            } else {
+                userService.changeRating(session.get().getUserFirst().getId(), -RATING);
+                userService.changeRating(session.get().getUserSecond().getId(), RATING);
+            }
             session.get().setGameState(SessionStatusEnum.STATUS_FINISH.toString());
             gameTimer.removeTask(sessionId);
             gameTimer.addTask(taskFactory.createTask(sessionId, DeleteSessionTask.class), sessionId);
             notifier.sendSessionEnd(sessionId);
         }
+        session.get().setPlayerTurnStartDate(new Timestamp(new Date().getTime()));
         sessionRepository.save(session.get());
 
         System.out.println(session.get().getTurnUser().getId() + " - user turn");
@@ -277,7 +274,9 @@ public class SessionService {
         if (!putShips(session, userId, shipArrangement)) {
             return false;
         }
-
+        if (!session.getUserFirst().getId().equals(userId) && !session.getUserSecond().getId().equals(userId)) {
+            return false;
+        }
         User userFirst = session.getUserFirst();
         User userSecond = session.getUserSecond();
 
@@ -308,6 +307,9 @@ public class SessionService {
      */
     public boolean putShips(final Session session, final Long userId, final ShipArrangement shipArrangement) {
         Optional<User> user = userService.getById(userId);
+        if (!cellRepository.findCellBySessionIdAndUserId(session.getId(), userId).isEmpty()) {
+            return false;
+        }
         if (arrangementValidator.validate(shipArrangement)) {
             for (List<Coords> coordsList : arrangementValidator.makeShips(shipArrangement)) {
                 String currentShipUUID = randomUUID().toString();
