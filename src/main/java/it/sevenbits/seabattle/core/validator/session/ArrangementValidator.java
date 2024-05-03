@@ -12,12 +12,9 @@ import java.util.Objects;
 
 @Component
 public class ArrangementValidator {
-
-    private final ShipCount shipCount;
     private HashMap<Integer, Integer> shipMap;
 
     public ArrangementValidator() {
-        this.shipCount = new ShipCount();
         shipMap = new HashMap<>();
     }
 
@@ -81,10 +78,10 @@ public class ArrangementValidator {
 
 
     public boolean validateArrangementCount(final ShipArrangement shipArrangement) {
-        shipMap.put(shipCount.getSINGLE_DECK(), 0);
-        shipMap.put(shipCount.getDOUBLE_DECK(), 0);
-        shipMap.put(shipCount.getTHREE_DECK(), 0);
-        shipMap.put(shipCount.getFOUR_DECK(), 0);
+        shipMap.put(ShipCount.SINGLE_DECK, 0);
+        shipMap.put(ShipCount.DOUBLE_DECK, 0);
+        shipMap.put(ShipCount.THREE_DECK, 0);
+        shipMap.put(ShipCount.FOUR_DECK, 0);
         ArrayList<Integer> distanceArray = new ArrayList<>();
         for (List<Coords> shipCoords : shipArrangement.getShipCoords()) {
             if (!validateCoordinate(shipCoords)) {

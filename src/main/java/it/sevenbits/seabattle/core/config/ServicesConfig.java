@@ -10,11 +10,13 @@ import it.sevenbits.seabattle.core.service.processing.GameProcessService;
 import it.sevenbits.seabattle.core.service.session.SessionService;
 import it.sevenbits.seabattle.core.service.user.UserService;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
+import it.sevenbits.seabattle.core.util.ship.ShipRandomizer;
 import it.sevenbits.seabattle.core.util.timer.GameTimer;
 import it.sevenbits.seabattle.core.util.timer.tasks.session.TaskFactory;
 import it.sevenbits.seabattle.core.validator.session.ArrangementValidator;
 import it.sevenbits.seabattle.core.validator.session.IdValidator;
 import it.sevenbits.seabattle.core.validator.session.StringValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -22,7 +24,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class ServicesConfig extends CorsConfiguration {
+    private final ShipRandomizer shipRandomizer;
+
     @Bean
     public SessionService sessionService(
             SessionRepository sessionRepository,
@@ -42,7 +47,8 @@ public class ServicesConfig extends CorsConfiguration {
                 arrangementValidator,
                 taskFactory,
                 notifier,
-                idValidator
+                idValidator,
+                shipRandomizer
         );
         taskFactory.setSessionService(service);
         return service;
