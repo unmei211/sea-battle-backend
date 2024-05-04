@@ -89,7 +89,7 @@ public class SessionController {
             IUserCredentials userCredentials
     ) {
         if (sessionService.userInTheGame(userCredentials.getUserId())) {
-            return ResponseEntity.ok(sessionService.generateRandomArrangement());
+            return ResponseEntity.ok(sessionService.generateRandomArrangement().getShipCoords());
         }
         throw new NotFoundException("User not found");
     }
