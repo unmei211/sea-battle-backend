@@ -5,7 +5,7 @@ import it.sevenbits.seabattle.core.util.notifier.Notifier;
 
 public class DeleteSessionTask extends SeaTask {
     private final SessionService sessionService;
-    private static final Long DELETE_SESSION_TASK_DELAY = 100000L;
+    private static final Long DELETE_SESSION_TASK_DELAY = 30000L;
 
     public  DeleteSessionTask(
             TasksHandler tasks,

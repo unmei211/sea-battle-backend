@@ -7,6 +7,7 @@ import it.sevenbits.seabattle.core.security.auth.AuthRequired;
 import it.sevenbits.seabattle.core.security.auth.IUserCredentials;
 import it.sevenbits.seabattle.core.security.auth.UserCredentials;
 import it.sevenbits.seabattle.core.service.session.SessionService;
+import it.sevenbits.seabattle.core.service.user.UserService;
 import it.sevenbits.seabattle.core.util.exceptions.ConflictException;
 import it.sevenbits.seabattle.core.util.exceptions.NotFoundException;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
@@ -37,6 +38,7 @@ import java.util.Optional;
 @Slf4j
 public class SessionController {
 
+    private final UserService userService;
     private SessionService sessionService;
     private Notifier notifier;
 
@@ -88,10 +90,11 @@ public class SessionController {
     public ResponseEntity<?> getRandomArrangement(
             IUserCredentials userCredentials
     ) {
-        if (sessionService.userInTheGame(userCredentials.getUserId())) {
+        if (userService.getById(userCredentials.getUserId()).isPresent()) {
             return ResponseEntity.ok(sessionService.generateRandomArrangement().getShipCoords());
+        } else {
+            throw new NotFoundException("User not found");
         }
-        throw new NotFoundException("User not found");
     }
 
     /**
@@ -189,4 +192,15 @@ public class SessionController {
         }
     }
 
+    @PostMapping("{sessionId}/leave")
+    public ResponseEntity<?> leaveSession(
+            @PathVariable final Long sessionId,
+            final IUserCredentials userCredentials
+    ) {
+        if (userService.getById(userCredentials.getUserId()).isPresent()) {
+            sessionService.leaveSession(sessionId, userCredentials.getUserId());
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        throw new NotFoundException("User not found");
+    }
 }

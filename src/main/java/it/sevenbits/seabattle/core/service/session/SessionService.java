@@ -381,4 +381,22 @@ public class SessionService {
         Session session = sessionRepository.findSessionByUserFirstOrUserSecond(user, user);
         return session != null;
     }
+
+    public void leaveSession(final Long sessionId, final Long userId) {
+        Session session = sessionRepository.findById(sessionId).get();
+        if (session.getUserFirst().getId().equals(userId)) {
+            session.setWinner(session.getUserSecond());
+            userService.changeRating(session.getUserSecond().getId(), 25);
+            userService.changeRating(session.getUserFirst().getId(), -25);
+        } else {
+            session.setWinner(session.getUserSecond());
+            userService.changeRating(session.getUserSecond().getId(), -25);
+            userService.changeRating(session.getUserFirst().getId(), 25);
+        }
+        session.setGameState("STATUS_FINISH");
+        sessionRepository.save(session);
+        gameTimer.removeTask(sessionId);
+        gameTimer.addTask(taskFactory.createTask(sessionId, DeleteSessionTask.class), sessionId);
+        notifier.sendSessionEnd(sessionId);
+    }
 }
