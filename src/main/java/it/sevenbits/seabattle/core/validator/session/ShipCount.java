@@ -2,10 +2,9 @@ package it.sevenbits.seabattle.core.validator.session;
 
 import lombok.Data;
 
-@Data
 public class ShipCount {
-    private final int SINGLE_DECK = 4;
-    private final int DOUBLE_DECK = 3;
-    private final int THREE_DECK = 2;
-    private final int FOUR_DECK = 1;
+    public static final int SINGLE_DECK = 4;
+    public static final int DOUBLE_DECK = 3;
+    public static final int THREE_DECK = 2;
+    public static final int FOUR_DECK = 1;
 }

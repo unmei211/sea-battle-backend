@@ -8,10 +8,13 @@ import it.sevenbits.seabattle.core.repository.session.SessionRepository;
 import it.sevenbits.seabattle.core.repository.user.UserRepository;
 import it.sevenbits.seabattle.core.service.processing.GameProcessService;
 import it.sevenbits.seabattle.core.service.user.UserService;
+import it.sevenbits.seabattle.core.util.exceptions.ConflictException;
+import it.sevenbits.seabattle.core.util.exceptions.InternalServerError;
 import it.sevenbits.seabattle.core.util.exceptions.NotFoundException;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
 import it.sevenbits.seabattle.core.util.session.SessionStatusEnum;
 import it.sevenbits.seabattle.core.util.session.SessionStatusFactory;
+import it.sevenbits.seabattle.core.util.ship.ShipRandomizer;
 import it.sevenbits.seabattle.core.util.timer.GameTimer;
 import it.sevenbits.seabattle.core.util.timer.tasks.session.*;
 import it.sevenbits.seabattle.core.validator.session.ArrangementValidator;
@@ -43,6 +46,7 @@ public class SessionService {
     private final Notifier notifier;
     private final IdValidator idValidator;
     private final int RATING = 25;
+    private final ShipRandomizer shipRandomizer;
 
     /**
      * get session by id
@@ -330,6 +334,10 @@ public class SessionService {
         return false;
     }
 
+    public boolean validateArrangement(ShipArrangement arrangement) {
+        return arrangementValidator.validate(arrangement);
+    }
+
     public Session letEndGame(
             final User winner,
             final Long sessionId
@@ -347,5 +355,30 @@ public class SessionService {
         );
 
         return sessionRepository.save(session);
+    }
+
+    public ShipArrangement generateRandomArrangement() {
+        while (true) {
+            try {
+                ShipArrangement arrangement = shipRandomizer.randomize();
+                if (!validateArrangement(arrangement)) {
+                    throw new InternalServerError("can't validate arrangement");
+                }
+                return shipRandomizer.randomize();
+            } catch (ConflictException e) {
+                continue;
+            }
+        }
+    }
+
+    public boolean userInTheGame(
+            final Long userId
+    ) {
+        User user = userService.getById(userId).orElseThrow(
+                () -> new NotFoundException("User not found")
+        );
+
+        Session session = sessionRepository.findSessionByUserFirstOrUserSecond(user, user);
+        return session != null;
     }
 }

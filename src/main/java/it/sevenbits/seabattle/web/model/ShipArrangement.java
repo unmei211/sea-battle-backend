@@ -20,4 +20,5 @@ public class ShipArrangement {
     public ShipArrangement() {
         shipCoords = new ArrayList<>();
     }
+
 }

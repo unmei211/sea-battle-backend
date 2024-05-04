@@ -3,9 +3,11 @@ package it.sevenbits.seabattle.web.controllers.session;
 import it.sevenbits.seabattle.core.model.cell.Cell;
 import it.sevenbits.seabattle.core.model.session.Session;
 import it.sevenbits.seabattle.core.model.user.User;
+import it.sevenbits.seabattle.core.security.auth.AuthRequired;
 import it.sevenbits.seabattle.core.security.auth.IUserCredentials;
 import it.sevenbits.seabattle.core.security.auth.UserCredentials;
 import it.sevenbits.seabattle.core.service.session.SessionService;
+import it.sevenbits.seabattle.core.util.exceptions.ConflictException;
 import it.sevenbits.seabattle.core.util.exceptions.NotFoundException;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
 import it.sevenbits.seabattle.core.util.session.SessionStatusEnum;
@@ -15,6 +17,7 @@ import it.sevenbits.seabattle.web.model.session.EndModel;
 import it.sevenbits.seabattle.web.model.session.SessionPendingDTO;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -43,6 +46,7 @@ public class SessionController {
      * @param id - session id
      * @return - session entity
      */
+    @AuthRequired
     @GetMapping("/{id}")
     public ResponseEntity<?> getSessionData(@PathVariable final Long id) {
         Session session = sessionService.getById(id).orElseThrow(
@@ -62,7 +66,7 @@ public class SessionController {
      * @param coords          - coordinates where player shoot
      * @return - result (shoot or miss)
      */
-
+    @AuthRequired
     @PostMapping("/{sessionId}/turn")
     public ResponseEntity<?> makeTurn(
             @PathVariable final Long sessionId,
@@ -79,11 +83,23 @@ public class SessionController {
 
     }
 
+    @AuthRequired
+    @GetMapping("/{sessionId}/arrangement/random")
+    public ResponseEntity<?> getRandomArrangement(
+            IUserCredentials userCredentials
+    ) {
+        if (sessionService.userInTheGame(userCredentials.getUserId())) {
+            return ResponseEntity.ok(sessionService.generateRandomArrangement());
+        }
+        throw new NotFoundException("User not found");
+    }
+
     /**
      * save session in database
      *
      * @param userCredentials - DTO object of user
      */
+    @AuthRequired
     @PostMapping
     public ResponseEntity<?> createOrJoinSession(
             final IUserCredentials userCredentials
@@ -120,6 +136,7 @@ public class SessionController {
      *
      * @param sessionId - session id
      */
+    @AuthRequired
     @GetMapping("/{sessionId}/state")
     public ResponseEntity<StatePullingResponse> statePulling(
             @PathVariable final Long sessionId
@@ -133,6 +150,7 @@ public class SessionController {
      * @param sessionId - session id
      * @return - winner id
      */
+    @AuthRequired
     @GetMapping("{sessionId}/end")
     public ResponseEntity<?> getWinnerId(
             @PathVariable final Long sessionId
@@ -153,6 +171,7 @@ public class SessionController {
      * @param shipArrangement - list of ships
      * @return - http status
      */
+    @AuthRequired
     @PostMapping("{sessionId}/arrangement")
     public ResponseEntity<?> userShipArrangement(
             @PathVariable final Long sessionId,
