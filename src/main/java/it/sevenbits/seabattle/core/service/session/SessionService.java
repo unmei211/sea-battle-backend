@@ -389,7 +389,7 @@ public class SessionService {
             userService.changeRating(session.getUserSecond().getId(), 25);
             userService.changeRating(session.getUserFirst().getId(), -25);
         } else {
-            session.setWinner(session.getUserSecond());
+            session.setWinner(session.getUserFirst());
             userService.changeRating(session.getUserSecond().getId(), -25);
             userService.changeRating(session.getUserFirst().getId(), 25);
         }
