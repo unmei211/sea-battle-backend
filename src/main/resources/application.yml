@@ -1,0 +1,20 @@
+spring:
+  flyway:
+    locations: classpath:migrations
+    url: jdbc:postgresql://localhost:5432/sea_battle
+    user: postgres
+    password: cisco
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sea_battle
+    username: postgres
+    password: cisco
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: create-drop
+
+jwt:
+  issuer: 'starovoytov@gmail.com'
+  signingKey: 'talspoc120nxjsapqke1d77'
+  aTokenDuration: 30
+  rTokenDuration: 168
