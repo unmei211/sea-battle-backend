@@ -40,8 +40,7 @@ public class Notifier {
         }
         messagingTemplate.convertAndSend(
                 getFormattedChannel(sessionId),
-                json
-        );
+                json);
     }
 
     public void sendSessionPendingReject(Long sessionId) {
@@ -59,6 +58,7 @@ public class Notifier {
     }
 
     public void sendSessionArrangementSuccess(Long sessionId) {
+        System.out.println(sessionId + "SESSION ID ");
         sendJsonMessage(
                 sessionId,
                 sessionStatusFactory.getSessionStatus(SessionStatusEnum.STATUS_ARRANGEMENT)

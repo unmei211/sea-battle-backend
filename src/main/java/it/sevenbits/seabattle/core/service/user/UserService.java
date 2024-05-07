@@ -7,6 +7,7 @@ import it.sevenbits.seabattle.core.repository.user.UserRepository;
 import it.sevenbits.seabattle.core.security.auth.JwtTokenService;
 import it.sevenbits.seabattle.core.security.encrypt.PasswordEncoder;
 import it.sevenbits.seabattle.core.util.exceptions.ConflictException;
+import it.sevenbits.seabattle.core.util.exceptions.NotFoundException;
 import it.sevenbits.seabattle.core.util.exceptions.UnauthorizedException;
 import it.sevenbits.seabattle.core.validator.session.BadValidException;
 import it.sevenbits.seabattle.core.validator.session.StringValidator;
@@ -143,6 +144,11 @@ public class UserService {
     }
 
     public void deleteUser(final Long id) {
-        userRepository.deleteById(id);
+        if (userRepository.existsById(id)) {
+            tokenRepository.deleteByUser(userRepository.findById(id).get());
+            userRepository.deleteById(id);
+        } else {
+            throw new NotFoundException("user not found");
+        }
     }
 }

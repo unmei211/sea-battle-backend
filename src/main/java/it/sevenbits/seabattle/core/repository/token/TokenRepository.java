@@ -1,6 +1,7 @@
 package it.sevenbits.seabattle.core.repository.token;
 
 import it.sevenbits.seabattle.core.model.token.RefreshToken;
+import it.sevenbits.seabattle.core.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,7 @@ import java.util.Optional;
 
 public interface TokenRepository extends JpaRepository<RefreshToken, Long> {
     Boolean existsByRefreshToken(String refreshToken);
+
     Boolean existsByUserId(Long userId);
 
     @Modifying
@@ -22,4 +24,6 @@ public interface TokenRepository extends JpaRepository<RefreshToken, Long> {
     );
 
     Optional<RefreshToken> findByUserId(Long userId);
+
+    void deleteByUser(User user);
 }

@@ -10,6 +10,7 @@ import it.sevenbits.seabattle.web.model.token.ComplexToken;
 import it.sevenbits.seabattle.web.model.DeleteUserRequest;
 import it.sevenbits.seabattle.web.model.user.UserDTO;
 import it.sevenbits.seabattle.web.model.UserForm;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -100,7 +101,11 @@ public class UserController {
 
     @PostMapping("/delete")
     public void deleteUser(
-            @RequestBody final DeleteUserRequest deleteUserRequest) {
-        userService.deleteUser(deleteUserRequest.getUserId());
+            final IUserCredentials userCredentials) {
+        try {
+            userService.deleteUser(userCredentials.getUserId());
+        } catch (NotFoundException e) {
+            throw new NotFoundException("User not found");
+        }
     }
 }

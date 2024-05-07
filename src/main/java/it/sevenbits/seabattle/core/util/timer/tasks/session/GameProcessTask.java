@@ -8,7 +8,7 @@ import it.sevenbits.seabattle.core.util.exceptions.NotFoundException;
 import it.sevenbits.seabattle.core.util.notifier.Notifier;
 
 public class GameProcessTask extends SeaTask {
-    private static final Long GAME_PROCESS_TASK_DELAY = 3000000000L;
+    private static final Long GAME_PROCESS_TASK_DELAY = 30000L;
     private final Notifier notifier;
     private final SessionService sessionService;
     private final GameProcessService gameProcessService;
@@ -36,9 +36,15 @@ public class GameProcessTask extends SeaTask {
     public void run() {
         try {
             User currentTurnUser = gameProcessService.getCurrentUser(sessionId);
-            User enemyUser = gameProcessService.getEnemy(currentTurnUser.getId(), sessionId);
-            sessionService.letEndGame(enemyUser, sessionId);
+            User enemyUser;
+            if (sessionService.getById(sessionId).get().getUserFirst() == currentTurnUser) {
+                enemyUser = sessionService.getById(sessionId).get().getUserSecond();
+            } else {
+                enemyUser = sessionService.getById(sessionId).get().getUserFirst();
+            }
             userService.changeRating(currentTurnUser.getId(), -RATING);
+            userService.changeRating(enemyUser.getId(), RATING);
+            sessionService.letEndGame(enemyUser, sessionId);
             notifier.sendSessionEnd(sessionId);
         } finally {
             super.run();

@@ -130,6 +130,7 @@ public class SessionController {
     public void deleteSession(
             @PathVariable final Long id
     ) {
+
         sessionService.remove(id);
     }
 

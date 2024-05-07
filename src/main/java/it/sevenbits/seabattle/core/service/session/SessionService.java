@@ -98,9 +98,14 @@ public class SessionService {
         Date currentDate = new Date();
         Optional<User> user = userService.getById(userId);
         if (sessionRepository.findSessionByUserFirstOrUserSecond(user.get(), user.get()) != null) {
-            if (!sessionRepository.findSessionByUserFirstOrUserSecond(user.get(), user.get()).getGameState().equals(SessionStatusEnum.STATUS_FINISH.toString())) {
-                throw new RuntimeException("User already have session");
+            for (Session sessions : sessionRepository.findSessionByUserFirstOrUserSecond(user.get(), user.get())) {
+                if (!session.getGameState().equals(SessionStatusEnum.STATUS_FINISH.toString())
+                        && !session.getGameState().equals(SessionStatusEnum.STATUS_CANCELED.toString())
+                ) {
+                    throw new RuntimeException("User already have session");
+                }
             }
+
         }
         Timestamp timeStamp = new Timestamp(currentDate.getTime());
         Optional<User> firstUser = userService.getById(userId);
@@ -116,6 +121,7 @@ public class SessionService {
      * @param id - session id
      */
     public void remove(final Long id) {
+        gameTimer.removeTask(id);
         sessionRepository.deleteById(id);
     }
 
@@ -302,6 +308,12 @@ public class SessionService {
         return true;
     }
 
+    public boolean isUserHaveShips(final Long userId, final Long sessionId) {
+        List<Cell> cells = cellRepository.findCellBySessionIdAndUserId(sessionId, userId);
+        return cells.isEmpty();
+
+    }
+
     /**
      * put ships specific user and fill other cells
      *
@@ -338,6 +350,19 @@ public class SessionService {
         return arrangementValidator.validate(arrangement);
     }
 
+    public void draw(final Long sessionId) {
+        gameTimer.removeTask(sessionId);
+        Session session = sessionRepository.findById(sessionId).orElseThrow(
+                () -> new NotFoundException("session not found")
+        );
+        session.setGameState(SessionStatusEnum.STATUS_CANCELED.toString());
+        sessionRepository.save(session);
+        gameTimer.addTask(
+                taskFactory.createTask(sessionId, DeleteSessionTask.class),
+                sessionId
+        );
+    }
+
     public Session letEndGame(
             final User winner,
             final Long sessionId
@@ -369,17 +394,6 @@ public class SessionService {
                 continue;
             }
         }
-    }
-
-    public boolean userInTheGame(
-            final Long userId
-    ) {
-        User user = userService.getById(userId).orElseThrow(
-                () -> new NotFoundException("User not found")
-        );
-
-        Session session = sessionRepository.findSessionByUserFirstOrUserSecond(user, user);
-        return session != null;
     }
 
     public void leaveSession(final Long sessionId, final Long userId) {
